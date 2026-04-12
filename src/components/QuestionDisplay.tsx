@@ -39,12 +39,22 @@ function MathContent({ html, className }: { html: string; className?: string }) 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    // KaTeX scans individual text nodes, so $$ split across <br> tags is never
-    // found as a complete delimiter pair. Strip <br>s immediately adjacent to
-    // $$ (and \[ \]) before injecting HTML.
+    // HTML inside $$...$$ and \[...\] blocks must be cleaned before KaTeX sees it:
+    // - <br> tags split text nodes so delimiters are never matched
+    // - &amp; encodes LaTeX & (column separator in arrays)
+    // - &nbsp; adds spurious whitespace
+    const cleanMathBlock = (inner: string) =>
+      inner
+        .replace(/<br\s*\/?>/gi, '\n')  // <br> → newline (harmless in math)
+        .replace(/<[^>]+>/g, '')        // remove any remaining HTML tags
+        .replace(/&amp;/g, '&')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+
     const cleaned = html
-      .replace(/(\$\$|\\\[)\s*(<br\s*\/?>)+\s*/gi, '$1')
-      .replace(/\s*(<br\s*\/?>)+\s*(\$\$|\\\])/gi, '$2')
+      .replace(/\$\$([\s\S]*?)\$\$/g,   (_, m) => `$$${cleanMathBlock(m)}$$`)
+      .replace(/\\\[([\s\S]*?)\\\]/g,   (_, m) => `\\[${cleanMathBlock(m)}\\]`)
 
     el.innerHTML = cleaned
     renderMathInElement(el, KATEX_OPTIONS)
