@@ -34,7 +34,7 @@ export function ExamHeader({ exam, fontSize, onFontSizeChange }: Props) {
           <span className="text-foreground font-bold text-xs">AEC</span>
         </div>
 
-        <span className="font-semibold text-sm text-foreground truncate flex-1">
+        <span className="font-semibold text-sm text-foreground truncate flex-1" title={exam.name}>
           {exam.name}
         </span>
 

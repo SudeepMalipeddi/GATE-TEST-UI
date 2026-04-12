@@ -63,7 +63,7 @@ export function InstructionsPage({ exam, onStart }: Props) {
                   ].map(item => (
                     <div key={item.label} className="bg-muted rounded-lg p-3 border border-border">
                       <p className="text-xs text-muted-foreground">{item.label}</p>
-                      <p className="text-sm font-semibold text-foreground mt-0.5 truncate">{item.value}</p>
+                      <p className="text-sm font-semibold text-foreground mt-0.5 break-words">{item.value}</p>
                     </div>
                   ))}
                 </div>
