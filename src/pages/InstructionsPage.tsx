@@ -14,76 +14,72 @@ interface Props {
 const instructions = [
   'This examination consists of multiple sections. Read all questions carefully before answering.',
   'Each question carries a specific number of marks as mentioned alongside the question.',
-  'For MCQ questions, there is negative marking. Incorrect answers will deduct 1/3rd of the marks assigned to that question.',
-  'For MSQ (Multiple Select) questions, there is NO negative marking. Partial credit may be awarded.',
-  'For NAT (Numerical Answer Type) questions, there is NO negative marking. Enter the exact numerical value.',
+  'For MCQ questions, there is negative marking. Incorrect answers will deduct 1/3rd of the assigned marks.',
+  'For MSQ (Multiple Select) questions, there is NO negative marking.',
+  'For NAT (Numerical Answer Type) questions, there is NO negative marking. Enter the exact value.',
   'You can navigate between questions using the Question Palette on the right side panel.',
   'Click "Save & Next" to save your answer and move to the next question.',
-  'Click "Mark for Review & Next" to flag a question and move to the next question. You can revisit it later.',
+  'Click "Mark for Review & Next" to flag a question for later review.',
   'Click "Clear Response" to clear your selected answer for the current question.',
-  'The timer on the right panel shows the remaining time. The exam will auto-submit when time runs out.',
+  'The timer shows the remaining time. The exam auto-submits when time runs out.',
   'Once you click "Submit Exam", you will not be able to change your answers.',
-  'Ensure your internet connection is stable throughout the examination.',
 ]
 
 const statusLegend = [
-  { color: 'bg-white border border-slate-300', label: 'Not Visited — You have not visited this question yet' },
-  { color: 'bg-red-50 border border-red-400', label: 'Not Answered — You visited but did not answer' },
-  { color: 'bg-green-500', label: 'Answered — You have saved an answer' },
-  { color: 'bg-violet-500', label: 'Marked for Review — You want to review later' },
-  { color: 'bg-violet-700', label: 'Answered & Marked — Saved answer, also marked for review' },
+  { cls: 'status-not-visited border border-border',  label: 'Not Visited — You have not visited this question yet' },
+  { cls: 'status-not-answered',                       label: 'Not Answered — You visited but did not answer' },
+  { cls: 'status-answered',                           label: 'Answered — You have saved an answer' },
+  { cls: 'status-review',                             label: 'Marked for Review — You want to revisit later' },
+  { cls: 'status-review-answered',                    label: 'Answered & Marked — Saved answer, also marked for review' },
 ]
 
 export function InstructionsPage({ exam, onStart }: Props) {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       <ExamHeader exam={exam} />
 
-      <div className="mt-[60px] p-4 md:p-6 max-w-4xl mx-auto">
-        <Card className="shadow-sm">
-          <CardHeader className="border-b">
+      <div className="mt-[60px] p-4 md:p-6 max-w-3xl mx-auto">
+        <Card>
+          <CardHeader className="border-b border-border">
             <div className="flex items-center gap-2">
-              <Info className="w-5 h-5 text-primary" />
-              <CardTitle className="text-base">General Instructions</CardTitle>
+              <Info className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-sm">General Instructions</CardTitle>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Please read the following instructions carefully before starting the examination.
-            </p>
           </CardHeader>
 
           <CardContent className="p-0">
-            <ScrollArea className="h-[55vh]">
-              <div className="p-5 space-y-5">
+            <ScrollArea className="h-[58vh]">
+              <div className="p-5 space-y-6">
                 {/* Exam info */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { label: 'Exam', value: exam.name },
-                    { label: 'Duration', value: `${exam.durationMinutes} minutes` },
+                    { label: 'Duration', value: `${exam.durationMinutes} min` },
                     {
-                      label: 'Total Questions',
+                      label: 'Questions',
                       value: String(exam.sections.reduce((a, s) => a + s.questions.length, 0)),
                     },
                     { label: 'Sections', value: String(exam.sections.length) },
                   ].map(item => (
-                    <div key={item.label} className="bg-slate-50 rounded-lg p-3 border">
+                    <div key={item.label} className="bg-muted rounded-lg p-3 border border-border">
                       <p className="text-xs text-muted-foreground">{item.label}</p>
-                      <p className="text-sm font-semibold text-slate-800 mt-0.5 truncate">{item.value}</p>
+                      <p className="text-sm font-semibold text-foreground mt-0.5 truncate">{item.value}</p>
                     </div>
                   ))}
                 </div>
 
                 <Separator />
 
-                {/* Instructions list */}
+                {/* Rules */}
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">Examination Rules</h3>
-                  <ol className="space-y-2">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Rules</h3>
+                  <ol className="space-y-2.5">
                     {instructions.map((inst, i) => (
                       <li key={i} className="flex gap-3 text-sm">
-                        <span className="flex-shrink-0 w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-bold">
+                        <span className="flex-shrink-0 w-5 h-5 border border-border rounded-full flex items-center justify-center text-xs font-bold text-muted-foreground">
                           {i + 1}
                         </span>
-                        <span className="text-slate-600 leading-relaxed">{inst}</span>
+                        <span className="text-foreground/80 leading-relaxed">{inst}</span>
                       </li>
                     ))}
                   </ol>
@@ -91,14 +87,14 @@ export function InstructionsPage({ exam, onStart }: Props) {
 
                 <Separator />
 
-                {/* Status legend */}
+                {/* Legend */}
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">Question Status Legend</h3>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Question Status Legend</h3>
                   <div className="space-y-2">
                     {statusLegend.map(item => (
                       <div key={item.label} className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded flex-shrink-0 ${item.color}`} />
-                        <span className="text-xs text-slate-600">{item.label}</span>
+                        <div className={`w-5 h-5 rounded-sm flex-shrink-0 ${item.cls}`} />
+                        <span className="text-xs text-muted-foreground">{item.label}</span>
                       </div>
                     ))}
                   </div>
@@ -107,16 +103,12 @@ export function InstructionsPage({ exam, onStart }: Props) {
             </ScrollArea>
           </CardContent>
 
-          <CardFooter className="border-t p-4 bg-slate-50">
-            <div className="flex items-center justify-between w-full">
-              <p className="text-xs text-muted-foreground">
-                By clicking Start, you agree to abide by the examination rules.
-              </p>
-              <Button onClick={onStart} className="gap-2">
-                I Understand, Start Exam
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
+          <CardFooter className="border-t border-border p-4 justify-between">
+            <p className="text-xs text-muted-foreground">By proceeding, you agree to the examination rules.</p>
+            <Button onClick={onStart} size="sm" className="gap-2">
+              Start Exam
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </CardFooter>
         </Card>
       </div>

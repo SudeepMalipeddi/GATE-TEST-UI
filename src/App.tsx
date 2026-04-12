@@ -1,4 +1,5 @@
 import { useExamState } from './hooks/useExamState'
+import { ExamSelectPage } from './pages/ExamSelectPage'
 import { InstructionsPage } from './pages/InstructionsPage'
 import { ExamPage } from './pages/ExamPage'
 import { ResultsPage } from './pages/ResultsPage'
@@ -6,6 +7,7 @@ import { ResultsPage } from './pages/ResultsPage'
 export default function App() {
   const {
     state,
+    selectExam,
     startExam,
     saveAnswer,
     clearAnswer,
@@ -22,6 +24,10 @@ export default function App() {
       saveAnswer(id, answer)
     }
     nextQuestion()
+  }
+
+  if (state.phase === 'select') {
+    return <ExamSelectPage onSelect={selectExam} />
   }
 
   if (state.phase === 'instructions' && state.exam) {

@@ -19,12 +19,6 @@ const typeLabel: Record<Question['type'], string> = {
   NAT: 'Numerical Answer',
 }
 
-const typeBadgeColor: Record<Question['type'], string> = {
-  MCQ: 'bg-orange-100 text-orange-700 border-orange-200',
-  MSQ: 'bg-blue-100 text-blue-700 border-blue-200',
-  NAT: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-}
-
 export function QuestionDisplay({ question, questionNumber, totalQuestions, answer, onAnswer }: Props) {
   const mcqAnswer = typeof answer === 'string' ? answer : ''
   const msqAnswers = Array.isArray(answer) ? answer : []
@@ -40,14 +34,14 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Question meta */}
+      {/* Meta row */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="outline" className="text-xs font-semibold">
           Q.{questionNumber} of {totalQuestions}
         </Badge>
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${typeBadgeColor[question.type]}`}>
+        <Badge variant="outline" className="text-xs">
           {typeLabel[question.type]}
-        </span>
+        </Badge>
         <span className="ml-auto text-xs text-muted-foreground italic">
           +{question.marks} mark{question.marks > 1 ? 's' : ''}
           {question.penalty > 0 && ` | −${question.penalty} penalty`}
@@ -56,12 +50,12 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
 
       {/* Question text */}
       <div
-        className="question-content text-sm leading-relaxed"
+        className="question-content text-sm leading-relaxed text-foreground"
         dangerouslySetInnerHTML={{ __html: question.text }}
       />
 
       {/* Answer area */}
-      <div className="border-t pt-4 mt-2">
+      <div className="border-t border-border pt-4 mt-2">
         <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
           Your Answer
         </p>
@@ -73,7 +67,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
                 <label
                   key={opt.id}
                   htmlFor={`opt-${opt.id}`}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors has-[[data-state=checked]]:bg-primary/5 has-[[data-state=checked]]:border-primary"
+                  className="flex items-start gap-3 p-3 rounded-lg border border-border hover:border-foreground/30 cursor-pointer transition-colors has-[[data-state=checked]]:border-foreground/60 has-[[data-state=checked]]:bg-accent"
                 >
                   <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="mt-0.5 flex-shrink-0" />
                   <div className="flex gap-2 text-sm">
@@ -92,7 +86,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
               <label
                 key={opt.id}
                 htmlFor={`msq-${opt.id}`}
-                className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg border border-border hover:border-foreground/30 cursor-pointer transition-colors"
               >
                 <Checkbox
                   id={`msq-${opt.id}`}

@@ -13,9 +13,14 @@ interface Props {
 
 export function ActionBar({ onPrev, onClear, onMarkReview, onSaveNext, hasPrev, hasNext, hasAnswer }: Props) {
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t">
+    <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-border">
       {hasAnswer && (
-        <Button variant="outline" size="sm" onClick={onClear} className="gap-1.5 text-destructive hover:text-destructive border-destructive/30 hover:border-destructive">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onClear}
+          className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
           <Trash2 className="w-3.5 h-3.5" />
           Clear
         </Button>
@@ -26,12 +31,10 @@ export function ActionBar({ onPrev, onClear, onMarkReview, onSaveNext, hasPrev, 
           <ChevronLeft className="w-4 h-4" />
           Previous
         </Button>
-
-        <Button variant="secondary" size="sm" onClick={onMarkReview} className="gap-1.5">
+        <Button variant="outline" size="sm" onClick={onMarkReview} className="gap-1.5">
           <Bookmark className="w-3.5 h-3.5" />
           Mark & Next
         </Button>
-
         <Button size="sm" onClick={onSaveNext} disabled={!hasNext && !hasAnswer} className="gap-1">
           Save & Next
           <ChevronRight className="w-4 h-4" />

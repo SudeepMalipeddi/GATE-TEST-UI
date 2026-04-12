@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ExamState, ExamData, QuestionStatus } from '../types/exam'
-import { sampleExam } from '../data/sampleExam'
 
 const STORAGE_KEY = 'exam_state'
 
@@ -14,14 +13,14 @@ function initStatuses(exam: ExamData): Record<string, QuestionStatus> {
   return statuses
 }
 
-const defaultState: ExamState = {
-  exam: sampleExam,
+const selectState: ExamState = {
+  exam: null,
   currentSection: 0,
   currentQuestion: 0,
   answers: {},
-  statuses: initStatuses(sampleExam),
-  timeRemaining: sampleExam.durationMinutes * 60,
-  phase: 'instructions',
+  statuses: {},
+  timeRemaining: 0,
+  phase: 'select',
 }
 
 export function useExamState() {
@@ -30,16 +29,15 @@ export function useExamState() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as ExamState
-        // Only restore mid-exam state, not results
         if (parsed.phase === 'exam') return parsed
       } catch {
         // fall through
       }
     }
-    return defaultState
+    return selectState
   })
 
-  // Persist to localStorage every 30s during exam
+  // Persist during exam
   useEffect(() => {
     if (state.phase !== 'exam') return
     const id = setInterval(() => {
@@ -48,7 +46,7 @@ export function useExamState() {
     return () => clearInterval(id)
   }, [state])
 
-  // Timer countdown during exam
+  // Timer countdown
   useEffect(() => {
     if (state.phase !== 'exam' || state.timeRemaining <= 0) return
     const id = setInterval(() => {
@@ -60,6 +58,18 @@ export function useExamState() {
     }, 1000)
     return () => clearInterval(id)
   }, [state.phase, state.timeRemaining])
+
+  const selectExam = useCallback((exam: ExamData) => {
+    setState({
+      exam,
+      currentSection: 0,
+      currentQuestion: 0,
+      answers: {},
+      statuses: initStatuses(exam),
+      timeRemaining: exam.durationMinutes * 60,
+      phase: 'instructions',
+    })
+  }, [])
 
   const startExam = useCallback(() => {
     setState(s => ({ ...s, phase: 'exam' }))
@@ -77,11 +87,7 @@ export function useExamState() {
     setState(s => {
       const answers = { ...s.answers }
       delete answers[questionId]
-      return {
-        ...s,
-        answers,
-        statuses: { ...s.statuses, [questionId]: 'not_answered' },
-      }
+      return { ...s, answers, statuses: { ...s.statuses, [questionId]: 'not_answered' } }
     })
   }, [])
 
@@ -132,9 +138,7 @@ export function useExamState() {
   const prevQuestion = useCallback(() => {
     setState(s => {
       if (!s.exam) return s
-      if (s.currentQuestion > 0) {
-        return { ...s, currentQuestion: s.currentQuestion - 1 }
-      }
+      if (s.currentQuestion > 0) return { ...s, currentQuestion: s.currentQuestion - 1 }
       if (s.currentSection > 0) {
         const prevSec = s.exam.sections[s.currentSection - 1]
         return {
@@ -154,11 +158,12 @@ export function useExamState() {
 
   const resetExam = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
-    setState(defaultState)
+    setState(selectState)
   }, [])
 
   return {
     state,
+    selectExam,
     startExam,
     saveAnswer,
     clearAnswer,
