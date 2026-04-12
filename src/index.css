@@ -49,12 +49,12 @@
   }
 }
 
-/* Question status palette — monochrome */
+/* Question status palette — Summer Ocean Breeze */
 .status-not-visited    { background: transparent;  border: 2px solid #555; }
-.status-not-answered   { background: #1a1a1a;      border: 2px solid #e5e5e5; }
-.status-answered       { background: #e5e5e5;      border: 2px solid #e5e5e5; }
-.status-review         { background: transparent;  border: 2px dashed #e5e5e5; }
-.status-review-answered{ background: #e5e5e5;      border: 2px dashed #e5e5e5; }
+.status-not-answered   { background: #E63946;      border: 2px solid #E63946; }
+.status-answered       { background: #F1FAEE;      border: 2px solid #F1FAEE; }
+.status-review         { background: #A8DADC;      border: 2px solid #A8DADC; }
+.status-review-answered{ background: #457B9D;      border: 2px solid #457B9D; }
 
 /* KaTeX display math: scroll on overflow rather than breaking layout */
 .katex-display { overflow-x: auto; overflow-y: hidden; }

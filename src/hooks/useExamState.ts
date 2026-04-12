@@ -76,11 +76,16 @@ export function useExamState() {
   }, [])
 
   const saveAnswer = useCallback((questionId: string, answer: string | string[]) => {
-    setState(s => ({
-      ...s,
-      answers: { ...s.answers, [questionId]: answer },
-      statuses: { ...s.statuses, [questionId]: 'answered' },
-    }))
+    setState(s => {
+      const cur = s.statuses[questionId]
+      // If already marked for review, keep it review_answered instead of dropping the flag
+      const next = (cur === 'review' || cur === 'review_answered') ? 'review_answered' : 'answered'
+      return {
+        ...s,
+        answers: { ...s.answers, [questionId]: answer },
+        statuses: { ...s.statuses, [questionId]: next },
+      }
+    })
   }, [])
 
   const clearAnswer = useCallback((questionId: string) => {
@@ -156,6 +161,14 @@ export function useExamState() {
     localStorage.removeItem(STORAGE_KEY)
   }, [])
 
+  const enterReview = useCallback(() => {
+    setState(s => ({ ...s, phase: 'review', currentSection: 0, currentQuestion: 0 }))
+  }, [])
+
+  const backToResults = useCallback(() => {
+    setState(s => ({ ...s, phase: 'results' }))
+  }, [])
+
   const resetExam = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
     setState(selectState)
@@ -172,6 +185,8 @@ export function useExamState() {
     nextQuestion,
     prevQuestion,
     submitExam,
+    enterReview,
+    backToResults,
     resetExam,
   }
 }

@@ -2,15 +2,16 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
-import { CheckCircle2, XCircle, BookMarked, RotateCcw } from 'lucide-react'
+import { CheckCircle2, XCircle, BookMarked, RotateCcw, ClipboardList } from 'lucide-react'
 import type { ExamState } from '../types/exam'
 
 interface Props {
   state: ExamState
+  onReview: () => void
   onReset: () => void
 }
 
-export function ResultsPage({ state, onReset }: Props) {
+export function ResultsPage({ state, onReview, onReset }: Props) {
   const { exam, answers, statuses } = state
   if (!exam) return null
 
@@ -124,10 +125,14 @@ export function ResultsPage({ state, onReset }: Props) {
               </span>
             </div>
           </CardContent>
-          <CardFooter className="border-t border-border p-4 justify-end">
+          <CardFooter className="border-t border-border p-4 flex justify-between">
             <Button variant="outline" size="sm" onClick={onReset} className="gap-2">
               <RotateCcw className="w-4 h-4" />
               Start New Exam
+            </Button>
+            <Button size="sm" onClick={onReview} className="gap-2">
+              <ClipboardList className="w-4 h-4" />
+              Review Answers
             </Button>
           </CardFooter>
         </Card>

@@ -106,18 +106,15 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
 
         {question.type === 'MCQ' && (
           <RadioGroup value={mcqAnswer} onValueChange={onAnswer}>
-            <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
               {question.options.map(opt => (
                 <label
                   key={opt.id}
                   htmlFor={`opt-${opt.id}`}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-border hover:border-foreground/30 cursor-pointer transition-colors has-[[data-state=checked]]:border-foreground/60 has-[[data-state=checked]]:bg-accent"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:border-foreground/40 cursor-pointer transition-colors has-[[data-state=checked]]:border-foreground has-[[data-state=checked]]:bg-accent"
                 >
-                  <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="mt-0.5 flex-shrink-0" />
-                  <div className="flex gap-2 text-sm">
-                    <span className="font-semibold text-muted-foreground w-4">{opt.id}.</span>
-                    <MathContent html={opt.text} />
-                  </div>
+                  <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="flex-shrink-0" />
+                  <span className="text-sm font-semibold">{opt.id.toUpperCase()}</span>
                 </label>
               ))}
             </div>
@@ -125,23 +122,24 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
         )}
 
         {question.type === 'MSQ' && (
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {question.options.map(opt => (
               <label
                 key={opt.id}
                 htmlFor={`msq-${opt.id}`}
-                className="flex items-start gap-3 p-3 rounded-lg border border-border hover:border-foreground/30 cursor-pointer transition-colors"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
+                  msqAnswers.includes(opt.id)
+                    ? 'border-foreground bg-accent'
+                    : 'border-border hover:border-foreground/40'
+                }`}
               >
                 <Checkbox
                   id={`msq-${opt.id}`}
                   checked={msqAnswers.includes(opt.id)}
                   onCheckedChange={() => toggleMsq(opt.id)}
-                  className="mt-0.5 flex-shrink-0"
+                  className="flex-shrink-0"
                 />
-                <div className="flex gap-2 text-sm">
-                  <span className="font-semibold text-muted-foreground w-4">{opt.id}.</span>
-                  <MathContent html={opt.text} />
-                </div>
+                <span className="text-sm font-semibold">{opt.id.toUpperCase()}</span>
               </label>
             ))}
           </div>
