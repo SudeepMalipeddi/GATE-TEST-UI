@@ -3,8 +3,6 @@ import type { ExamData } from '../types/exam'
 export const sampleExam: ExamData = {
   name: 'GATE CSE 2024 — Mock Test',
   durationMinutes: 180,
-  candidateName: 'Sudeep Kumar',
-  candidateId: 'GATE2024001',
   sections: [
     {
       name: 'General Aptitude',

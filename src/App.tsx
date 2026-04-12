@@ -1,5 +1,4 @@
 import { useExamState } from './hooks/useExamState'
-import { LoginPage } from './pages/LoginPage'
 import { InstructionsPage } from './pages/InstructionsPage'
 import { ExamPage } from './pages/ExamPage'
 import { ResultsPage } from './pages/ResultsPage'
@@ -7,7 +6,6 @@ import { ResultsPage } from './pages/ResultsPage'
 export default function App() {
   const {
     state,
-    login,
     startExam,
     saveAnswer,
     clearAnswer,
@@ -24,10 +22,6 @@ export default function App() {
       saveAnswer(id, answer)
     }
     nextQuestion()
-  }
-
-  if (state.phase === 'login') {
-    return <LoginPage onLogin={login} />
   }
 
   if (state.phase === 'instructions' && state.exam) {

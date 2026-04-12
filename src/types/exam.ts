@@ -31,8 +31,6 @@ export interface ExamData {
   name: string
   durationMinutes: number
   sections: Section[]
-  candidateName: string
-  candidateId: string
 }
 
 export interface ExamState {
@@ -42,5 +40,5 @@ export interface ExamState {
   answers: Record<string, string | string[]>
   statuses: Record<string, QuestionStatus>
   timeRemaining: number
-  phase: 'login' | 'instructions' | 'exam' | 'results'
+  phase: 'instructions' | 'exam' | 'results'
 }

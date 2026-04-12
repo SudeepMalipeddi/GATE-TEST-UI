@@ -14,29 +14,34 @@ function initStatuses(exam: ExamData): Record<string, QuestionStatus> {
   return statuses
 }
 
+const defaultState: ExamState = {
+  exam: sampleExam,
+  currentSection: 0,
+  currentQuestion: 0,
+  answers: {},
+  statuses: initStatuses(sampleExam),
+  timeRemaining: sampleExam.durationMinutes * 60,
+  phase: 'instructions',
+}
+
 export function useExamState() {
   const [state, setState] = useState<ExamState>(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
       try {
-        return JSON.parse(saved) as ExamState
+        const parsed = JSON.parse(saved) as ExamState
+        // Only restore mid-exam state, not results
+        if (parsed.phase === 'exam') return parsed
       } catch {
-        // fall through to default
+        // fall through
       }
     }
-    return {
-      exam: null,
-      currentSection: 0,
-      currentQuestion: 0,
-      answers: {},
-      statuses: {},
-      timeRemaining: 0,
-      phase: 'login',
-    }
+    return defaultState
   })
 
-  // Persist to localStorage every 30s and on phase change
+  // Persist to localStorage every 30s during exam
   useEffect(() => {
+    if (state.phase !== 'exam') return
     const id = setInterval(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     }, 30_000)
@@ -56,33 +61,8 @@ export function useExamState() {
     return () => clearInterval(id)
   }, [state.phase, state.timeRemaining])
 
-  const login = useCallback((_username: string) => {
-    const exam = sampleExam
-    setState(s => ({
-      ...s,
-      exam,
-      statuses: initStatuses(exam),
-      timeRemaining: exam.durationMinutes * 60,
-      phase: 'instructions',
-    }))
-  }, [])
-
   const startExam = useCallback(() => {
     setState(s => ({ ...s, phase: 'exam' }))
-  }, [])
-
-  const currentQuestion = useCallback(() => {
-    if (!state.exam) return null
-    return state.exam.sections[state.currentSection]?.questions[state.currentQuestion] ?? null
-  }, [state])
-
-  const markVisited = useCallback((questionId: string) => {
-    setState(s => {
-      if (s.statuses[questionId] === 'not_visited') {
-        return { ...s, statuses: { ...s.statuses, [questionId]: 'not_answered' } }
-      }
-      return s
-    })
   }, [])
 
   const saveAnswer = useCallback((questionId: string, answer: string | string[]) => {
@@ -138,7 +118,6 @@ export function useExamState() {
         if (statuses[nextQ.id] === 'not_visited') statuses[nextQ.id] = 'not_answered'
         return { ...s, currentQuestion: s.currentQuestion + 1, statuses }
       }
-      // next section
       if (s.currentSection < s.exam.sections.length - 1) {
         const nextSec = s.exam.sections[s.currentSection + 1]
         const firstQ = nextSec.questions[0]
@@ -175,23 +154,12 @@ export function useExamState() {
 
   const resetExam = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
-    setState({
-      exam: null,
-      currentSection: 0,
-      currentQuestion: 0,
-      answers: {},
-      statuses: {},
-      timeRemaining: 0,
-      phase: 'login',
-    })
+    setState(defaultState)
   }, [])
 
   return {
     state,
-    login,
     startExam,
-    currentQuestion,
-    markVisited,
     saveAnswer,
     clearAnswer,
     markForReview,
