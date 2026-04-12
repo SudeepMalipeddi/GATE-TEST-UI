@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { ExamHeader } from '../components/ExamHeader'
+import { ExamHeader, type FontSize } from '../components/ExamHeader'
 import { TimerBlock } from '../components/TimerBlock'
 import { QuestionPalette } from '../components/QuestionPalette'
 import { QuestionDisplay } from '../components/QuestionDisplay'
@@ -34,6 +34,26 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
   const { exam, currentSection, currentQuestion, answers, statuses, timeRemaining } = state
   const [submitOpen, setSubmitOpen] = useState(false)
   const [localAnswer, setLocalAnswer] = useState<string | string[] | undefined>(undefined)
+  const [fontSize, setFontSize] = useState<FontSize>(
+    () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
+  )
+
+  // Apply font size as a data attribute so CSS can target .question-content globally
+  useEffect(() => {
+    document.documentElement.setAttribute('data-font-size', fontSize)
+    localStorage.setItem('font_size', fontSize)
+  }, [fontSize])
+
+  // Warn before accidental tab close / refresh mid-exam
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [])
+
+  const handleFontSize = useCallback((s: FontSize) => setFontSize(s), [])
 
   if (!exam) return null
 
@@ -98,7 +118,7 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
 
   return (
     <div className="min-h-screen bg-background">
-      <ExamHeader exam={exam} />
+      <ExamHeader exam={exam} fontSize={fontSize} onFontSizeChange={handleFontSize} />
 
       <div className="mt-[60px] flex h-[calc(100vh-60px)]">
         {/* LEFT */}

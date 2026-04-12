@@ -36,7 +36,7 @@ const statusLegend = [
 export function InstructionsPage({ exam, onStart }: Props) {
   return (
     <div className="min-h-screen bg-background">
-      <ExamHeader exam={exam} />
+      <ExamHeader exam={exam} fontSize="md" onFontSizeChange={() => {}} />
 
       <div className="mt-[60px] p-4 md:p-6 max-w-3xl mx-auto">
         <Card>

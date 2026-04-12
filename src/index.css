@@ -59,6 +59,11 @@
 /* KaTeX display math: scroll on overflow rather than breaking layout */
 .katex-display { overflow-x: auto; overflow-y: hidden; }
 
+/* Font size preference — toggled via data-font-size on <html> */
+[data-font-size="sm"] .question-content { font-size: 0.8125rem; line-height: 1.6; }
+[data-font-size="md"] .question-content { font-size: 0.9375rem; line-height: 1.7; }
+[data-font-size="lg"] .question-content { font-size: 1.0625rem; line-height: 1.8; }
+
 /* Question content */
 .question-content img { max-width: 100%; height: auto; }
 .question-content table { border-collapse: collapse; margin: 0.5rem 0; }
