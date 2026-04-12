@@ -1,19 +1,11 @@
 import { useRef, useEffect } from 'react'
+import renderMathInElement from 'katex/contrib/auto-render'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import type { Question } from '../types/exam'
-
-declare global {
-  interface Window {
-    MathJax?: {
-      typesetPromise: (elements?: HTMLElement[]) => Promise<void>
-      startup?: { promise: Promise<void> }
-    }
-  }
-}
 
 interface Props {
   question: Question
@@ -29,35 +21,26 @@ const typeLabel: Record<Question['type'], string> = {
   NAT: 'Numerical Answer',
 }
 
-// Renders HTML + MathJax into a div that React never touches after mount.
-// Using dangerouslySetInnerHTML would let React overwrite MathJax's SVGs on
-// every re-render (e.g. when answer state changes), so we use a ref instead.
+const KATEX_OPTIONS = {
+  delimiters: [
+    { left: '$$', right: '$$', display: true },
+    { left: '$',  right: '$',  display: false },
+    { left: '\\[', right: '\\]', display: true },
+    { left: '\\(', right: '\\)', display: false },
+  ],
+  throwOnError: false,
+}
+
+// Sets innerHTML then immediately runs KaTeX — synchronous, no async race.
+// Bypasses React's reconciliation so KaTeX's rendered HTML is never overwritten.
 function MathContent({ html, className }: { html: string; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-
     el.innerHTML = html
-
-    const typeset = () => {
-      window.MathJax?.typesetPromise?.([el]).catch(() => {})
-    }
-
-    if (window.MathJax?.startup?.promise) {
-      window.MathJax.startup.promise.then(typeset)
-    } else {
-      const id = setInterval(() => {
-        if (window.MathJax?.startup?.promise) {
-          clearInterval(id)
-          window.MathJax.startup.promise.then(typeset)
-        }
-      }, 50)
-      return () => clearInterval(id)
-    }
-  // html is the only thing that should trigger a re-render of this element
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    renderMathInElement(el, KATEX_OPTIONS)
   }, [html])
 
   return <div ref={ref} className={className} />
@@ -92,7 +75,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
         </span>
       </div>
 
-      {/* Question text — rendered outside React's control so MathJax SVGs survive re-renders */}
+      {/* Question text */}
       <MathContent
         html={question.text}
         className="question-content text-sm leading-relaxed text-foreground"

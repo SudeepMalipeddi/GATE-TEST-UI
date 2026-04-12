@@ -56,10 +56,8 @@
 .status-review         { background: #A855F7; border: 2px solid #A855F7; } /* violet */
 .status-review-answered{ background: #F59E0B; border: 2px solid #F59E0B; } /* amber */
 
-/* MathJax SVG inherits text color on dark theme */
-mjx-container svg { color: inherit; }
-/* Only block/display math gets scroll — inline math must stay inline */
-mjx-container[display="true"] { overflow-x: auto; max-width: 100%; display: block; }
+/* KaTeX display math: scroll on overflow rather than breaking layout */
+.katex-display { overflow-x: auto; overflow-y: hidden; }
 
 /* Question content */
 .question-content img { max-width: 100%; height: auto; }
