@@ -12,7 +12,7 @@ interface Props {
 
 // Year tabs shown — matching the original app's structure.
 // 2020+ years are separate tabs; everything older is "Other".
-const YEAR_TABS = ['2025', '2024', '2023', '2022', '2021', '2020', 'DA', 'Other'] as const
+const YEAR_TABS = ['2026', '2025', '2024', '2023', '2022', '2021', '2020', 'DA', 'Other'] as const
 type YearTab = typeof YEAR_TABS[number]
 
 function getYearTab(name: string): YearTab {
