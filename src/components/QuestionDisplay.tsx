@@ -39,7 +39,14 @@ function MathContent({ html, className }: { html: string; className?: string }) 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    el.innerHTML = html
+    // KaTeX scans individual text nodes, so $$ split across <br> tags is never
+    // found as a complete delimiter pair. Strip <br>s immediately adjacent to
+    // $$ (and \[ \]) before injecting HTML.
+    const cleaned = html
+      .replace(/(\$\$|\\\[)\s*(<br\s*\/?>)+\s*/gi, '$1')
+      .replace(/\s*(<br\s*\/?>)+\s*(\$\$|\\\])/gi, '$2')
+
+    el.innerHTML = cleaned
     renderMathInElement(el, KATEX_OPTIONS)
   }, [html])
 

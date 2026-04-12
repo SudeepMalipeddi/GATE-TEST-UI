@@ -4,10 +4,10 @@ import type { ExamData, QuestionStatus } from '../types/exam'
 // Only the palette buttons use color — everything else is B&W
 const statusClass: Record<QuestionStatus, string> = {
   not_visited:     'status-not-visited text-muted-foreground',
-  not_answered:    'status-not-answered text-white',
-  answered:        'status-answered text-white',
-  review:          'status-review text-white',
-  review_answered: 'status-review-answered text-white',
+  not_answered:    'status-not-answered text-foreground',   // dark fill → light text
+  answered:        'status-answered text-background',       // light fill → dark text
+  review:          'status-review text-foreground',         // transparent → light text
+  review_answered: 'status-review-answered text-background', // light fill → dark text
 }
 
 interface Props {

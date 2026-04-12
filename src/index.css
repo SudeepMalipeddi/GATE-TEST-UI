@@ -49,12 +49,12 @@
   }
 }
 
-/* Legend status colors — the only colored elements */
-.status-not-visited    { background: transparent; border: 2px solid #555; }
-.status-not-answered   { background: #EF4444; border: 2px solid #EF4444; } /* red   */
-.status-answered       { background: #22C55E; border: 2px solid #22C55E; } /* green */
-.status-review         { background: #A855F7; border: 2px solid #A855F7; } /* violet */
-.status-review-answered{ background: #F59E0B; border: 2px solid #F59E0B; } /* amber */
+/* Question status palette — monochrome */
+.status-not-visited    { background: transparent;  border: 2px solid #555; }
+.status-not-answered   { background: #1a1a1a;      border: 2px solid #e5e5e5; }
+.status-answered       { background: #e5e5e5;      border: 2px solid #e5e5e5; }
+.status-review         { background: transparent;  border: 2px dashed #e5e5e5; }
+.status-review-answered{ background: #e5e5e5;      border: 2px dashed #e5e5e5; }
 
 /* KaTeX display math: scroll on overflow rather than breaking layout */
 .katex-display { overflow-x: auto; overflow-y: hidden; }
