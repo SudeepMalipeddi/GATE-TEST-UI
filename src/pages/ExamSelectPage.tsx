@@ -1,9 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { useState, useEffect } from 'react'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Clock, BookOpen, Lock, ChevronRight } from 'lucide-react'
-import { examCatalog } from '../data/examCatalog'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Clock, BookOpen, ChevronRight, Search, Loader2 } from 'lucide-react'
+import { loadCatalog, loadExam } from '../data/examCatalog'
+import type { ExamMeta } from '../data/examCatalog'
 import type { ExamData } from '../types/exam'
 
 interface Props {
@@ -11,6 +14,43 @@ interface Props {
 }
 
 export function ExamSelectPage({ onSelect }: Props) {
+  const [catalog, setCatalog] = useState<ExamMeta[]>([])
+  const [filter, setFilter] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [loadingId, setLoadingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadCatalog().then(c => { setCatalog(c); setLoading(false) })
+  }, [])
+
+  const filtered = catalog.filter(e =>
+    e.name.toLowerCase().includes(filter.toLowerCase()) ||
+    e.sectionNames.some(s => s.toLowerCase().includes(filter.toLowerCase()))
+  )
+
+  // Group by category
+  const groups: Record<string, ExamMeta[]> = {}
+  for (const exam of filtered) {
+    let group = 'Other'
+    if (exam.name.includes('GATE CSE')) group = 'GATE CSE — Original Papers'
+    else if (exam.name.includes('GATE IT')) group = 'GATE IT — Original Papers'
+    else if (exam.name.startsWith('GATE Overflow |')) group = 'GATE Overflow — Topic Tests'
+    else if (exam.name.startsWith('GATEBOOK')) group = 'GATEBOOK 2019 — Topic Tests'
+    else if (exam.name.includes('Mock GATE') || exam.name.includes('Grand Test')) group = 'Mock Tests'
+    groups[group] = groups[group] || []
+    groups[group].push(exam)
+  }
+
+  const handleSelect = async (meta: ExamMeta) => {
+    setLoadingId(meta.id)
+    try {
+      const exam = await loadExam(meta.id)
+      onSelect(exam)
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
@@ -18,81 +58,85 @@ export function ExamSelectPage({ onSelect }: Props) {
         <div className="w-8 h-8 rounded-md border border-border flex items-center justify-center">
           <BookOpen className="w-4 h-4 text-foreground" />
         </div>
-        <span className="font-semibold text-sm tracking-wide">Assessment Examination Center</span>
+        <span className="font-semibold text-sm">Assessment Examination Center</span>
       </header>
 
-      {/* Body */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-6 py-10">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-foreground">Select Examination</h1>
-          <p className="text-sm text-muted-foreground mt-1">Choose an exam below to proceed to instructions.</p>
+      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-8 flex flex-col">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-foreground">Select Examination</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {loading ? 'Loading...' : `${catalog.length} exams available`}
+          </p>
         </div>
 
-        <Separator className="mb-6" />
+        {/* Search */}
+        <div className="relative mb-5">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by exam name or subject..."
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            className="pl-9 text-sm"
+          />
+        </div>
 
-        <div className="space-y-3">
-          {examCatalog.map(exam => (
-            <Card
-              key={exam.id}
-              className={`border transition-colors ${
-                exam.available
-                  ? 'border-border hover:border-foreground/40 cursor-pointer'
-                  : 'border-border opacity-40 cursor-not-allowed'
-              }`}
-              onClick={() => {
-                if (exam.available && exam.data) onSelect(exam.data)
-              }}
-            >
-              <CardHeader className="pb-2 pt-4 px-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-sm font-semibold truncate">{exam.name}</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-0.5">{exam.subject}</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <ScrollArea className="flex-1 -mx-1 px-1">
+            <div className="space-y-6 pb-6">
+              {Object.entries(groups).map(([groupName, exams]) => (
+                <div key={groupName}>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                    {groupName} ({exams.length})
+                  </p>
+                  <div className="space-y-1.5">
+                    {exams.map(exam => (
+                      <Card
+                        key={exam.id}
+                        className="border-border hover:border-foreground/40 cursor-pointer transition-colors"
+                        onClick={() => handleSelect(exam)}
+                      >
+                        <CardHeader className="py-3 px-4">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <CardTitle className="text-sm font-medium truncate">{exam.name}</CardTitle>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Clock className="w-3 h-3" />
+                                  {exam.durationMinutes} min
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {exam.totalQuestions} questions
+                                </span>
+                                {exam.sectionNames.map(s => (
+                                  <Badge key={s} variant="outline" className="text-xs py-0 border-border text-muted-foreground">
+                                    {s}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            {loadingId === exam.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground flex-shrink-0" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            )}
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    ))}
                   </div>
-                  {exam.available ? (
-                    <Badge variant="outline" className="text-xs border-foreground/30 text-foreground flex-shrink-0">
-                      Available
-                    </Badge>
-                  ) : (
-                    <div className="flex items-center gap-1 text-muted-foreground flex-shrink-0">
-                      <Lock className="w-3 h-3" />
-                      <span className="text-xs">Locked</span>
-                    </div>
-                  )}
+                  <Separator className="mt-5" />
                 </div>
-              </CardHeader>
-
-              <CardContent className="px-4 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {exam.durationMinutes} min
-                    </span>
-                    <span>{exam.totalQuestions} questions</span>
-                  </div>
-                  {exam.available && (
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mt-8">
-          <Button
-            variant="default"
-            className="w-full"
-            onClick={() => {
-              const first = examCatalog.find(e => e.available && e.data)
-              if (first?.data) onSelect(first.data)
-            }}
-          >
-            Start Available Exam
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </div>
+              ))}
+              {filtered.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-10">No exams match your search.</p>
+              )}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   )

@@ -1,0 +1,2112 @@
+[
+  {
+    "id": "gate-cse-2016-set-1-original-paper",
+    "name": "GATE CSE 2016 | Set 1 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2016-set-2-original-paper",
+    "name": "GATE CSE 2016 | Set 2 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2015-set-3-original-paper",
+    "name": "GATE CSE 2015 | Set 3 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2015-set-1-original-paper",
+    "name": "GATE CSE 2015 | Set 1 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2015-set-2-original-paper",
+    "name": "GATE CSE 2015 | Set 2 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2014-set-1-original-paper",
+    "name": "GATE CSE 2014 | Set 1 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2007",
+    "name": "ISRO 2007",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2014-set-2-original-paper",
+    "name": "GATE CSE 2014 | Set 2 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2009",
+    "name": "ISRO 2009",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2013",
+    "name": "ISRO 2013",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2014-set-3-original-paper",
+    "name": "GATE CSE 2014 | Set 3 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2008",
+    "name": "ISRO 2008",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2011",
+    "name": "ISRO 2011",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2015",
+    "name": "ISRO 2015",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-mathematics-test-1",
+    "name": "GATE Overflow | Mathematics | Test 1",
+    "durationMinutes": 60,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2014",
+    "name": "ISRO 2014",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2016",
+    "name": "ISRO 2016",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2012-paper-2",
+    "name": "UGC NET CSE Exam | June 2012 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-operating-systems-test-1",
+    "name": "GATE Overflow | Operating Systems | Test 1",
+    "durationMinutes": 100,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2014-paper-2",
+    "name": "UGC NET CSE Exam | June 2014 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-algorithms-test-1",
+    "name": "GATE Overflow | Algorithms | Test 1",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-data-structures-test-1",
+    "name": "GATE Overflow | Data Structures | Test 1",
+    "durationMinutes": 72,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-general-aptitude-test-1",
+    "name": "GATE Overflow | General Aptitude | Test 1",
+    "durationMinutes": 72,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "gate-overflow-digital-logic-test-1",
+    "name": "GATE Overflow | Digital Logic | Test 1",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-programming-test-1",
+    "name": "GATE Overflow | Programming | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2013-original-paper",
+    "name": "GATE CSE 2013 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2012-original-paper",
+    "name": "GATE CSE 2012 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2011-original-paper",
+    "name": "GATE CSE 2011 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2009-original-paper",
+    "name": "GATE CSE 2009 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 60,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2010-original-paper",
+    "name": "GATE CSE 2010 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-compiler-design-test-1",
+    "name": "Test by Bikram | Compiler Design | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-theory-of-computation-test-1",
+    "name": "Test by Bikram | Theory of Computation | Test 1",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-computer-networks-test-1",
+    "name": "Test by Bikram | Computer Networks | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-databases-test-1",
+    "name": "Test by Bikram | Databases | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-digital-logic-test-2",
+    "name": "Test by Bikram | Digital Logic | Test 2",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-computer-organization-and-architecture-test-1",
+    "name": "Test by Bikram | Computer Organization and Architecture | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2008-original-paper",
+    "name": "GATE CSE 2008 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-data-structures-test-2",
+    "name": "Test by Bikram | Data Structures | Test 2",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2005-original-paper",
+    "name": "GATE CSE 2005 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 90,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2006-original-paper",
+    "name": "GATE CSE 2006 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2007-original-paper",
+    "name": "GATE CSE 2007 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-it-2005-original-paper",
+    "name": "GATE IT 2005 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 90,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-it-2007-original-paper",
+    "name": "GATE IT 2007 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-it-2008-original-paper",
+    "name": "GATE IT 2008 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2004-original-paper",
+    "name": "GATE CSE 2004 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 90,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-it-2004-original-paper",
+    "name": "GATE IT 2004 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 90,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2003-original-paper",
+    "name": "GATE CSE 2003 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 90,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-general-aptitude-test-2",
+    "name": "Test by Bikram | General Aptitude | Test 2",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "gate-it-2006-original-paper",
+    "name": "GATE IT 2006 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-operating-systems-test-2",
+    "name": "Test by Bikram | Operating Systems | Test 2",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "algorithms-previous-gate-1",
+    "name": "Algorithms - Previous GATE 1",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "probability-previous-gate-1",
+    "name": "Probability - Previous GATE 1",
+    "durationMinutes": 180,
+    "totalQuestions": 70,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "linear-algebra-previous-gate-1",
+    "name": "Linear Algebra - Previous GATE 1",
+    "durationMinutes": 100,
+    "totalQuestions": 46,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "verbal-ability-previous-gate-all-streams",
+    "name": "Verbal Ability - Previous GATE (all streams)",
+    "durationMinutes": 180,
+    "totalQuestions": 107,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "numerical-ability-previous-gate-all-streams",
+    "name": "Numerical Ability - Previous GATE (all streams)",
+    "durationMinutes": 240,
+    "totalQuestions": 112,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "test-by-bikram-mock-gate-test-1",
+    "name": "Test by Bikram | Mock GATE | Test 1",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "graph-theory-previous-gate-1",
+    "name": "Graph Theory - Previous GATE 1",
+    "durationMinutes": 90,
+    "totalQuestions": 38,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-mock-gate-test-2",
+    "name": "Test by Bikram | Mock GATE | Test 2",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-mock-gate-test-3",
+    "name": "Test by Bikram | Mock GATE | Test 3",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2017-set-2-original-paper",
+    "name": "GATE CSE 2017 | Set 2 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2017-set-1-original-paper",
+    "name": "GATE CSE 2017 | Set 1 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-mock-gate-test-4",
+    "name": "Test by Bikram | Mock GATE | Test 4",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2017",
+    "name": "ISRO 2017",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-programming-test-2",
+    "name": "Test by Bikram | Programming | Test 2",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-computer-organization-and-architecture-test-2",
+    "name": "Test by Bikram | Computer Organization and Architecture | Test 2",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-algorithms-test-2",
+    "name": "Test by Bikram | Algorithms | Test 2",
+    "durationMinutes": 75,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-mathematics-test-2",
+    "name": "Test by Bikram | Mathematics | Test 2",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-theory-of-computation-test-2",
+    "name": "Test by Bikram | Theory of Computation | Test 2",
+    "durationMinutes": 60,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "test-by-bikram-databases-test-2",
+    "name": "Test by Bikram | Databases | Test 2",
+    "durationMinutes": 55,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "set-theory-algebra-previous-gate-1",
+    "name": "Set Theory & Algebra - Previous GATE 1",
+    "durationMinutes": 235,
+    "totalQuestions": 97,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "theory-of-computation-previous-gate-1",
+    "name": "Theory of Computation - Previous GATE 1",
+    "durationMinutes": 250,
+    "totalQuestions": 91,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2018-original-paper",
+    "name": "GATE CSE 2018 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2017-ii",
+    "name": "ISRO 2017-ii",
+    "durationMinutes": 90,
+    "totalQuestions": 79,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-os1-introduction-and-cpu-scheduling",
+    "name": "GATEBOOK-2019 OS1: Introduction and CPU Scheduling",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-ds2-trees-and-graphs",
+    "name": "GATEBOOK-2019 DS2: Trees and Graphs",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-ds1-c-programming-basic-ds",
+    "name": "GATEBOOK-2019 DS1: C Programming, Basic DS",
+    "durationMinutes": 108,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-os2-process-synchronization",
+    "name": "GATEBOOK-2019 OS2: Process Synchronization",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-digital1-boolean-algebra",
+    "name": "GATEBOOK-2019 Digital1: Boolean Algebra",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-coa1-basics-and-alu",
+    "name": "GATEBOOK-2019 COA1: Basics and ALU",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-coa2-addressing-modes",
+    "name": "GATEBOOK-2019 COA2: Addressing Modes",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-discrete-mathematics-1-mathematical-logic",
+    "name": "GATEBOOK-2019-Discrete Mathematics 1: Mathematical Logic",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-toc1-regular-languages",
+    "name": "GATEBOOK-2019-TOC1 Regular Languages",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-cn1-flow-and-error-control",
+    "name": "GATEBOOK-2019 CN1: Flow and Error Control",
+    "durationMinutes": 75,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-cn2-network-layer",
+    "name": "GATEBOOK-2019 CN2: Network Layer",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-discrete-mathematics-2-combinatorics",
+    "name": "GATEBOOK-2019 Discrete Mathematics 2: Combinatorics",
+    "durationMinutes": 75,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-os3-memory-management",
+    "name": "GATEBOOK-2019 OS3: Memory Management",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-algorithms1-sorting-and-searching",
+    "name": "GATEBOOK-2019 Algorithms1: Sorting and Searching",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-toc3-turing-machines",
+    "name": "GATEBOOK-2019 TOC3: Turing Machines",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-os4-file-systems",
+    "name": "GATEBOOK-2019 OS4: File Systems",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dm4-groups-and-lattice",
+    "name": "GATEBOOK-2019 DM4: Groups and Lattice",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-coa5-memory-and-io",
+    "name": "GATEBOOK-2019 COA5: Memory and IO",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-coa4-pipelining",
+    "name": "GATEBOOK-2019 COA4: Pipelining",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-coa3-control-unit",
+    "name": "GATEBOOK-2019 COA3: Control Unit",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-algorithms2-algorithm-design-hashing",
+    "name": "GATEBOOK-2019 Algorithms2: Algorithm Design, Hashing",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dbms2-normalization",
+    "name": "GATEBOOK-2019 DBMS2: Normalization",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-digital2-combinational-circuits",
+    "name": "GATEBOOK-2019 Digital2: Combinational Circuits",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-digital3-sequential-circuits",
+    "name": "GATEBOOK-2019 Digital3: Sequential Circuits",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dm3-set-theory-algebra",
+    "name": "GATEBOOK-2019 DM3: Set Theory & Algebra",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dm5-graph-theory",
+    "name": "GATEBOOK-2019 DM5: Graph Theory",
+    "durationMinutes": 36,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dbms1-er-diagrams-sql-relational-algebra",
+    "name": "GATEBOOK-2019 DBMS1: ER Diagrams, SQL, Relational Algebra",
+    "durationMinutes": 90,
+    "totalQuestions": 25,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-toc2-context-free-languages",
+    "name": "GATEBOOK-2019 TOC2: Context Free Languages",
+    "durationMinutes": 54,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-toc4-language-properties",
+    "name": "GATEBOOK-2019 TOC4: Language Properties",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dbms3-indexing",
+    "name": "GATEBOOK-2019 DBMS3: Indexing",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-cn3-transport-layer",
+    "name": "GATEBOOK-2019 CN3: Transport Layer",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-dbms4-transactions-and-concurrency",
+    "name": "GATEBOOK-2019 DBMS4: Transactions and Concurrency",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-probability-1",
+    "name": "GATEBOOK-2019 Probability 1",
+    "durationMinutes": 70,
+    "totalQuestions": 24,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-linear-algebra-1",
+    "name": "GATEBOOK-2019 Linear Algebra 1",
+    "durationMinutes": 72,
+    "totalQuestions": 26,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-calculus-1",
+    "name": "GATEBOOK-2019 Calculus 1",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-cn4-application-layer-and-network-security",
+    "name": "GATEBOOK-2019 CN4: Application Layer and Network Security",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-mock-gate-test-1-test-by-ruturaj",
+    "name": "GATE Overflow | Mock GATE | Test 1 | Test by Ruturaj",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-compilers1-lexical-analysis",
+    "name": "GATEBOOK-2019 Compilers1: Lexical Analysis",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-1-ds-a",
+    "name": "GATEBOOK-2019 Grand Test 1: DS&A",
+    "durationMinutes": 90,
+    "totalQuestions": 29,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-2-dbms",
+    "name": "GATEBOOK-2019 Grand Test 2: DBMS",
+    "durationMinutes": 108,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-compilers2-parsing",
+    "name": "GATEBOOK-2019 Compilers2: Parsing",
+    "durationMinutes": 72,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-3-computer-networks",
+    "name": "GATEBOOK-2019 Grand Test 3: Computer Networks",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-4-mathematics",
+    "name": "GATEBOOK-2019 Grand Test 4: Mathematics",
+    "durationMinutes": 90,
+    "totalQuestions": 24,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-5-digital-logic",
+    "name": "GATEBOOK-2019 Grand Test 5: Digital Logic",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-6-co-architecture",
+    "name": "GATEBOOK-2019 Grand Test 6: CO & Architecture",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-grand-test-discrete-mathematics",
+    "name": "GATEBOOK-2019 Grand Test Discrete Mathematics",
+    "durationMinutes": 108,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "applied-course-mock-gate-test-1",
+    "name": "Applied Course | Mock GATE | Test 1",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-mock-test-1",
+    "name": "GATEBOOK-2019 Mock Test 1",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gatebook-2019-mock-test-2",
+    "name": "GATEBOOK-2019 Mock Test 2",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "co-architecture-previous-gate-1",
+    "name": "CO & Architecture - Previous GATE 1",
+    "durationMinutes": 180,
+    "totalQuestions": 61,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-general-aptitude-test-2",
+    "name": "GATE Overflow | General Aptitude | Test 2",
+    "durationMinutes": 18,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "gate-overflow-compiler-design-test-1",
+    "name": "GATE Overflow | Compiler Design | Test 1",
+    "durationMinutes": 45,
+    "totalQuestions": 14,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-cse-2019-original-paper",
+    "name": "GATE CSE 2019 | Original Paper",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "isro-2018",
+    "name": "ISRO 2018",
+    "durationMinutes": 90,
+    "totalQuestions": 80,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2014-paper-3",
+    "name": "UGC NET CSE Exam | December 2014 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2014-paper-2",
+    "name": "UGC NET CSE Exam | December 2014 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2014-paper-3",
+    "name": "UGC NET CSE Exam | June 2014 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2013-paper-3",
+    "name": "UGC NET CSE Exam | December 2013 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2013-paper-2",
+    "name": "UGC NET CSE Exam | December 2013 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-september-2013-paper-2",
+    "name": "UGC NET CSE Exam | September 2013 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-september-2013-paper-3",
+    "name": "UGC NET CSE Exam | September 2013 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2013-paper-3",
+    "name": "UGC NET CSE Exam | June 2013 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2013-paper-2",
+    "name": "UGC NET CSE Exam | June 2013 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2012-paper-3",
+    "name": "UGC NET CSE Exam | December 2012 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2012-paper-2",
+    "name": "UGC NET CSE Exam | December 2012 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2015-paper-3",
+    "name": "UGC NET CSE Exam | December 2015 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-december-2015-paper-2",
+    "name": "UGC NET CSE Exam | December 2015 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2012-paper-3",
+    "name": "UGC NET CSE Exam | June 2012 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2015-paper-3",
+    "name": "UGC NET CSE Exam | June 2015 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2015-paper-2",
+    "name": "UGC NET CSE Exam | June 2015 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2012",
+    "name": "TIFR CSE 2012",
+    "durationMinutes": 180,
+    "totalQuestions": 40,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2013",
+    "name": "TIFR CSE 2013",
+    "durationMinutes": 180,
+    "totalQuestions": 40,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2015",
+    "name": "TIFR CSE 2015",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2014",
+    "name": "TIFR CSE 2014",
+    "durationMinutes": 180,
+    "totalQuestions": 40,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2017",
+    "name": "TIFR CSE 2017",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2016",
+    "name": "TIFR CSE 2016",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2018",
+    "name": "TIFR CSE 2018",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-cse-2019",
+    "name": "TIFR CSE 2019",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-mathematics-2015",
+    "name": "TIFR Mathematics 2015",
+    "durationMinutes": 180,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "nielit-scientific-assistant-2017-december-section-b",
+    "name": "NIELIT Scientific Assistant 2017 December Section B",
+    "durationMinutes": 60,
+    "totalQuestions": 60,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-mathematics-2014",
+    "name": "TIFR Mathematics 2014",
+    "durationMinutes": 120,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "tifr-mathematics-2016",
+    "name": "TIFR Mathematics 2016",
+    "durationMinutes": 120,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-5-mathematical-logic",
+    "name": "GO Classes Weekly Quiz 5 | Mathematical Logic",
+    "durationMinutes": 54,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-6-programming-in-c-pointers",
+    "name": "GO Classes Weekly Quiz 6 | Programming in C | Pointers",
+    "durationMinutes": 35,
+    "totalQuestions": 17,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-7-mathematical-logic",
+    "name": "GO Classes Weekly Quiz 7 | Mathematical Logic",
+    "durationMinutes": 50,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-8-programming-in-c",
+    "name": "GO Classes Weekly Quiz 8 | Programming in C",
+    "durationMinutes": 40,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-3-propositional-logic",
+    "name": "GO Classes Weekly Quiz 3 | Propositional Logic",
+    "durationMinutes": 50,
+    "totalQuestions": 21,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-4-programming-recursion",
+    "name": "GO Classes Weekly Quiz 4 | Programming | Recursion",
+    "durationMinutes": 50,
+    "totalQuestions": 23,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-1-general-aptitude",
+    "name": "GO Classes Weekly Quiz 1 | General Aptitude",
+    "durationMinutes": 40,
+    "totalQuestions": 14,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-2-programming-in-c-and-propositional-logic",
+    "name": "GO Classes Weekly Quiz 2 | Programming in C and Propositional Logic",
+    "durationMinutes": 40,
+    "totalQuestions": 13,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-9-data-structures-linked-list",
+    "name": "GO Classes Weekly Quiz 9 | Data Structures | Linked List",
+    "durationMinutes": 45,
+    "totalQuestions": 14,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-10-discrete-mathematics-set-theory-mathematical-logic-lattice",
+    "name": "GO Classes Weekly Quiz 10 | Discrete Mathematics | Set Theory, Mathematical Logic, Lattice",
+    "durationMinutes": 50,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-11-data-structures-asymptotic-notation-and-loop-time-complexity",
+    "name": "GO Classes Weekly Quiz 11 | Data Structures | Asymptotic Notation and Loop Time Complexity",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "uppcl-2018",
+    "name": "UPPCL 2018",
+    "durationMinutes": 153,
+    "totalQuestions": 85,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-12-discrete-mathematics-group-theory-functions",
+    "name": "GO Classes Weekly Quiz 12 | Discrete Mathematics | Group Theory, Functions",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-13-discrete-mathematics-combinatorics",
+    "name": "GO Classes Weekly Quiz 13 | Discrete Mathematics | Combinatorics",
+    "durationMinutes": 50,
+    "totalQuestions": 16,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-14-data-structures-stack-queue-linked-list",
+    "name": "GO Classes Weekly Quiz 14 | Data Structures | Stack, Queue, Linked List",
+    "durationMinutes": 40,
+    "totalQuestions": 13,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-15-digital-logic-k-map-combinational-circuits",
+    "name": "GO Classes Weekly Quiz 15 | Digital Logic | K-Map, Combinational Circuits",
+    "durationMinutes": 50,
+    "totalQuestions": 16,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-16-complete-data-structures",
+    "name": "GO Classes Weekly Quiz 16 | Complete Data Structures",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-january-2017-paper-2",
+    "name": "UGC NET CSE Exam | January 2017 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-january-2017-paper-3",
+    "name": "UGC NET CSE Exam | January 2017 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mixed-subjects-test-3",
+    "name": "GATE Overflow Test Series | Mixed Subjects | Test 3",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-november-2017-paper-2",
+    "name": "UGC NET CSE Exam | November 2017 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-november-2017-paper-3",
+    "name": "UGC NET CSE Exam | November 2017 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-computer-networks-test-1",
+    "name": "GATE Overflow Test Series | Computer Networks| Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-operating-systems-test-1",
+    "name": "GATE Overflow Test Series | Operating Systems | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-linear-algebra-test-1",
+    "name": "GATE Overflow Test Series | Linear Algebra | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-operating-systems-test-2",
+    "name": "GATE Overflow Test Series | Operating Systems | Test 2",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mixed-subjects-test-4",
+    "name": "GATE Overflow Test Series | Mixed Subjects | Test 4",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-compiler-design-test-1",
+    "name": "GATE Overflow Test Series | Compiler Design | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-analytical-and-spatial-aptitude-test-1",
+    "name": "GATE Overflow Test Series | Analytical and Spatial Aptitude | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-1",
+    "name": "GATE Overflow Test Series | Mock GATE 1",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-2",
+    "name": "GATE Overflow Test Series | Mock GATE 2",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-calculus-test-1",
+    "name": "GATE Overflow Test Series | Calculus | Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-4",
+    "name": "GATE Overflow Test Series | Mock GATE 4",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-3",
+    "name": "GATE Overflow Test Series | Mock GATE 3",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-5",
+    "name": "GATE Overflow Test Series | Mock GATE 5",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-mock-gate-6",
+    "name": "GATE Overflow Test Series | Mock GATE 6",
+    "durationMinutes": 180,
+    "totalQuestions": 65,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-1-fundamental-course",
+    "name": "GO Classes Weekly Quiz 1 | Fundamental Course",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-3-fundamental-course-and-linear-algebra",
+    "name": "GO Classes Weekly Quiz 3 | Fundamental Course and Linear Algebra",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Aptitude",
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-2-fundamental-course",
+    "name": "GO Classes Weekly Quiz 2 | Fundamental Course",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-4-propositional-logic",
+    "name": "GO Classes Weekly Quiz 4 | Propositional Logic",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-5-propositional-logic",
+    "name": "GO Classes Weekly Quiz 5 | Propositional Logic",
+    "durationMinutes": 45,
+    "totalQuestions": 16,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-weekly-quiz-6-linear-algebra",
+    "name": "GO Classes Weekly Quiz 6 | Linear Algebra",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "discrete-mathematics-propositional-logic-test-1",
+    "name": "Discrete Mathematics | Propositional Logic | Test 1",
+    "durationMinutes": 60,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "discrete-mathematics-propositional-logic-test-2",
+    "name": "Discrete Mathematics | Propositional Logic | Test 2",
+    "durationMinutes": 60,
+    "totalQuestions": 14,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "discrete-mathematics-logic-test-3",
+    "name": "Discrete Mathematics | Logic | Test 3",
+    "durationMinutes": 50,
+    "totalQuestions": 12,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "discrete-mathematics-logic-test-4",
+    "name": "Discrete Mathematics | Logic | Test 4",
+    "durationMinutes": 75,
+    "totalQuestions": 14,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-verbal-aptitude-shallow-test-1",
+    "name": "GATE Overflow Test Series | Verbal Aptitude | Shallow Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "gate-overflow-test-series-quantitative-aptitude-shallow-test-1",
+    "name": "GATE Overflow Test Series | Quantitative Aptitude | Shallow Test 1",
+    "durationMinutes": 90,
+    "totalQuestions": 30,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-july-2016-paper-2",
+    "name": "UGC NET CSE Exam | July 2016 | Paper 2",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-july-2016-paper-3",
+    "name": "UGC NET CSE Exam | July 2016 | Paper 3",
+    "durationMinutes": 150,
+    "totalQuestions": 75,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2019-paper-1",
+    "name": "UGC NET CSE Exam | June 2019 | Paper 1",
+    "durationMinutes": 75,
+    "totalQuestions": 50,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "ugc-net-cse-exam-june-2019-paper-2",
+    "name": "UGC NET CSE Exam | June 2019 | Paper 2",
+    "durationMinutes": 180,
+    "totalQuestions": 100,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-proof-techniques-weekly-quiz",
+    "name": "GO Classes GATE CS | Proof Techniques| Weekly Quiz",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Aptitude"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-propositional-logic-weekly-quiz-1",
+    "name": "GO Classes GATE CS | Propositional Logic | Weekly Quiz 1",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-propositional-logic-weekly-quiz-2",
+    "name": "GO Classes GATE CS | Propositional Logic| Weekly Quiz 2",
+    "durationMinutes": 45,
+    "totalQuestions": 16,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-propositional-logic-weekly-quiz-3",
+    "name": "GO Classes GATE CS | Propositional Logic| Weekly Quiz 3",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-first-order-logic-weekly-quiz-1",
+    "name": "GO Classes GATE CS | First Order Logic| Weekly Quiz 1",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-propositional-logic-weekly-quiz-4",
+    "name": "GO Classes GATE CS | Propositional Logic| Weekly Quiz 4",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-first-order-logic-weekly-quiz-2",
+    "name": "GO Classes GATE CS | First Order Logic | Weekly Quiz 2",
+    "durationMinutes": 50,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-propositional-logic-weekly-quiz-5",
+    "name": "GO Classes GATE CS | Propositional Logic| Weekly Quiz 5",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-set-theory-weekly-quiz-1",
+    "name": "GO Classes GATE CS | Set Theory | Weekly Quiz 1",
+    "durationMinutes": 20,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-functions-weekly-quiz-1",
+    "name": "GO Classes GATE CS| Functions| Weekly Quiz 1",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-relations-weekly-quiz-1",
+    "name": "GO Classes GATE CS | Relations | Weekly Quiz 1",
+    "durationMinutes": 21,
+    "totalQuestions": 7,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-set-theory-weekly-quiz-2",
+    "name": "GO Classes GATE CS | Set Theory | Weekly Quiz 2",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-relation-lattice-poset-weekly-quiz-2",
+    "name": "GO Classes GATE CS| Relation, Lattice & Poset | Weekly Quiz 2",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-gate-cs-combinatorics-weekly-quiz-4",
+    "name": "GO Classes GATE CS | Combinatorics | Weekly Quiz 4",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-digital-logic-boolean-algebra-weekly-quiz-1",
+    "name": "GO Classes CS | Digital Logic | Boolean Algebra | Weekly Quiz 1",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-digital-logic-boolean-algebra-minimization-number-system-weekly-quiz-3",
+    "name": "GO Classes | Digital Logic | Boolean Algebra, Minimization, Number System | Weekly Quiz 3",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-digital-logic-boolean-algebra-weekly-quiz-2",
+    "name": "GO Classes CS | Digital Logic | Boolean Algebra | Weekly Quiz 2",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-digital-logic-multiplexer-weekly-quiz-4",
+    "name": "GO Classes CS | Digital Logic | Multiplexer | Weekly Quiz 4",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-digital-logic-combinational-circuits-number-system-weekly-quiz-5",
+    "name": "GO Classes CS | Digital Logic | Combinational Circuits, Number System | Weekly Quiz 5",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-c-programming-weekly-quiz-2",
+    "name": "GO Classes CS | C-Programming | Weekly Quiz 2",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-c-programming-weekly-quiz-1",
+    "name": "GO Classes CS | C-Programming | Weekly Quiz 1",
+    "durationMinutes": 30,
+    "totalQuestions": 10,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-digital-logic-combinational-circuits-weekly-quiz-6",
+    "name": "GO Classes CS | Digital Logic | Combinational Circuits | Weekly Quiz 6",
+    "durationMinutes": 45,
+    "totalQuestions": 15,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-c-programming-weekly-quiz-4",
+    "name": "GO Classes CS | C-Programming | Weekly Quiz 4",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  },
+  {
+    "id": "go-classes-cs-c-programming-weekly-quiz-3",
+    "name": "GO Classes CS | C-Programming | Weekly Quiz 3",
+    "durationMinutes": 60,
+    "totalQuestions": 20,
+    "sectionNames": [
+      "Technical"
+    ]
+  }
+]
