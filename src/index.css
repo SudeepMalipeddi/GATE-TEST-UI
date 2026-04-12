@@ -56,6 +56,10 @@
 .status-review         { background: #A855F7; border: 2px solid #A855F7; } /* violet */
 .status-review-answered{ background: #F59E0B; border: 2px solid #F59E0B; } /* amber */
 
+/* MathJax SVG inherits text color on dark theme */
+mjx-container svg { color: inherit; }
+mjx-container { overflow-x: auto; max-width: 100%; }
+
 /* Question content */
 .question-content img { max-width: 100%; height: auto; }
 .question-content table { border-collapse: collapse; margin: 0.5rem 0; }

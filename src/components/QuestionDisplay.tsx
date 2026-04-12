@@ -1,9 +1,20 @@
+import { useRef, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import type { Question } from '../types/exam'
+
+declare global {
+  interface Window {
+    MathJax?: {
+      typesetPromise: (elements?: HTMLElement[]) => Promise<void>
+      typesetClear: (elements?: HTMLElement[]) => void
+      startup?: { promise: Promise<void> }
+    }
+  }
+}
 
 interface Props {
   question: Question
@@ -20,6 +31,33 @@ const typeLabel: Record<Question['type'], string> = {
 }
 
 export function QuestionDisplay({ question, questionNumber, totalQuestions, answer, onAnswer }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const run = () => {
+      if (!window.MathJax?.typesetPromise) return
+      window.MathJax.typesetClear?.([el])
+      window.MathJax.typesetPromise([el]).catch(() => {})
+    }
+
+    // Wait for MathJax to finish initialising before typesetting
+    if (window.MathJax?.startup?.promise) {
+      window.MathJax.startup.promise.then(run)
+    } else {
+      // MathJax not loaded yet — poll until it is
+      const id = setInterval(() => {
+        if (window.MathJax?.startup?.promise) {
+          clearInterval(id)
+          window.MathJax.startup.promise.then(run)
+        }
+      }, 100)
+      return () => clearInterval(id)
+    }
+  }, [question.id])
+
   const mcqAnswer = typeof answer === 'string' ? answer : ''
   const msqAnswers = Array.isArray(answer) ? answer : []
   const natAnswer = typeof answer === 'string' ? answer : ''
@@ -33,7 +71,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={containerRef} className="flex flex-col gap-4">
       {/* Meta row */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="outline" className="text-xs font-semibold">
