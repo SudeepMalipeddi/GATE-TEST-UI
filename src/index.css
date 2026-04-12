@@ -58,7 +58,8 @@
 
 /* MathJax SVG inherits text color on dark theme */
 mjx-container svg { color: inherit; }
-mjx-container { overflow-x: auto; max-width: 100%; }
+/* Only block/display math gets scroll — inline math must stay inline */
+mjx-container[display="true"] { overflow-x: auto; max-width: 100%; display: block; }
 
 /* Question content */
 .question-content img { max-width: 100%; height: auto; }
