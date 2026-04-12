@@ -131,7 +131,7 @@ export function ExamSelectPage({ onSelect }: Props) {
               {filter && ` matching "${filter}"`}
             </p>
             <ScrollArea className="flex-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pb-6">
+              <div className="flex flex-col gap-1.5 pb-6">
                 {filtered.map(exam => (
                   <button
                     key={exam.id}
@@ -139,7 +139,7 @@ export function ExamSelectPage({ onSelect }: Props) {
                     disabled={loadingId === exam.id}
                     className="text-left px-3 py-2.5 rounded border border-border hover:border-foreground/40 hover:bg-accent transition-colors text-sm font-medium flex items-center justify-between gap-2 disabled:opacity-60"
                   >
-                    <span className="line-clamp-2 leading-snug">{exam.name}</span>
+                    <span>{exam.name}</span>
                     {loadingId === exam.id && (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground flex-shrink-0" />
                     )}
