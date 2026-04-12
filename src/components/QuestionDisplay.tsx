@@ -10,7 +10,6 @@ declare global {
   interface Window {
     MathJax?: {
       typesetPromise: (elements?: HTMLElement[]) => Promise<void>
-      typesetClear: (elements?: HTMLElement[]) => void
       startup?: { promise: Promise<void> }
     }
   }
@@ -30,34 +29,41 @@ const typeLabel: Record<Question['type'], string> = {
   NAT: 'Numerical Answer',
 }
 
-export function QuestionDisplay({ question, questionNumber, totalQuestions, answer, onAnswer }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null)
+// Renders HTML + MathJax into a div that React never touches after mount.
+// Using dangerouslySetInnerHTML would let React overwrite MathJax's SVGs on
+// every re-render (e.g. when answer state changes), so we use a ref instead.
+function MathContent({ html, className }: { html: string; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const el = containerRef.current
+    const el = ref.current
     if (!el) return
 
-    const run = () => {
-      if (!window.MathJax?.typesetPromise) return
-      window.MathJax.typesetClear?.([el])
-      window.MathJax.typesetPromise([el]).catch(() => {})
+    el.innerHTML = html
+
+    const typeset = () => {
+      window.MathJax?.typesetPromise?.([el]).catch(() => {})
     }
 
-    // Wait for MathJax to finish initialising before typesetting
     if (window.MathJax?.startup?.promise) {
-      window.MathJax.startup.promise.then(run)
+      window.MathJax.startup.promise.then(typeset)
     } else {
-      // MathJax not loaded yet — poll until it is
       const id = setInterval(() => {
         if (window.MathJax?.startup?.promise) {
           clearInterval(id)
-          window.MathJax.startup.promise.then(run)
+          window.MathJax.startup.promise.then(typeset)
         }
-      }, 100)
+      }, 50)
       return () => clearInterval(id)
     }
-  }, [question.id])
+  // html is the only thing that should trigger a re-render of this element
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [html])
 
+  return <div ref={ref} className={className} />
+}
+
+export function QuestionDisplay({ question, questionNumber, totalQuestions, answer, onAnswer }: Props) {
   const mcqAnswer = typeof answer === 'string' ? answer : ''
   const msqAnswers = Array.isArray(answer) ? answer : []
   const natAnswer = typeof answer === 'string' ? answer : ''
@@ -71,7 +77,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {/* Meta row */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="outline" className="text-xs font-semibold">
@@ -86,10 +92,10 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
         </span>
       </div>
 
-      {/* Question text */}
-      <div
+      {/* Question text — rendered outside React's control so MathJax SVGs survive re-renders */}
+      <MathContent
+        html={question.text}
         className="question-content text-sm leading-relaxed text-foreground"
-        dangerouslySetInnerHTML={{ __html: question.text }}
       />
 
       {/* Answer area */}
@@ -110,7 +116,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
                   <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="mt-0.5 flex-shrink-0" />
                   <div className="flex gap-2 text-sm">
                     <span className="font-semibold text-muted-foreground w-4">{opt.id}.</span>
-                    <span dangerouslySetInnerHTML={{ __html: opt.text }} />
+                    <MathContent html={opt.text} />
                   </div>
                 </label>
               ))}
@@ -134,7 +140,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
                 />
                 <div className="flex gap-2 text-sm">
                   <span className="font-semibold text-muted-foreground w-4">{opt.id}.</span>
-                  <span dangerouslySetInnerHTML={{ __html: opt.text }} />
+                  <MathContent html={opt.text} />
                 </div>
               </label>
             ))}
