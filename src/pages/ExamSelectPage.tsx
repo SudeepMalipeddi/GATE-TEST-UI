@@ -52,7 +52,9 @@ export function ExamSelectPage({ onSelect }: Props) {
   const populatedTabs = YEAR_TABS.filter(tab => catalog.some(e => getYearTab(e.name) === tab))
 
   // Exams for current tab, filtered by search
-  const tabExams = catalog.filter(e => getYearTab(e.name) === activeTab)
+  const tabExams = catalog
+    .filter(e => getYearTab(e.name) === activeTab)
+    .sort((a, b) => a.name.localeCompare(b.name))
   const filtered = filter.trim()
     ? tabExams.filter(e => e.name.toLowerCase().includes(filter.toLowerCase()))
     : tabExams
