@@ -65,6 +65,9 @@
 [data-font-size="lg"] .question-content { font-size: 1.0625rem; line-height: 1.8; }
 
 /* Question content */
+.question-content ol,
+.question-content ul  { padding-left: 1.75rem; margin: 0.5rem 0; }
+.question-content li  { margin-bottom: 0.25rem; }
 .question-content img { max-width: 100%; height: auto; }
 .question-content table { border-collapse: collapse; margin: 0.5rem 0; }
 .question-content td,
