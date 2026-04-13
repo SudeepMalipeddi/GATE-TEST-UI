@@ -40,5 +40,5 @@ export interface ExamState {
   answers: Record<string, string | string[]>
   statuses: Record<string, QuestionStatus>
   timeRemaining: number
-  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review'
+  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review' | 'practice'
 }

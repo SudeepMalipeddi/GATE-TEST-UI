@@ -4,6 +4,7 @@ import { InstructionsPage } from './pages/InstructionsPage'
 import { ExamPage } from './pages/ExamPage'
 import { ResultsPage } from './pages/ResultsPage'
 import { ReviewPage } from './pages/ReviewPage'
+import { PracticePage } from './pages/PracticePage'
 
 export default function App() {
   const {
@@ -19,6 +20,8 @@ export default function App() {
     submitExam,
     enterReview,
     backToResults,
+    enterPractice,
+    exitPractice,
     resetExam,
   } = useExamState()
 
@@ -34,7 +37,7 @@ export default function App() {
   }
 
   if (state.phase === 'instructions' && state.exam) {
-    return <InstructionsPage exam={state.exam} onStart={startExam} />
+    return <InstructionsPage exam={state.exam} onStart={startExam} onPractice={enterPractice} />
   }
 
   if (state.phase === 'exam' && state.exam) {
@@ -58,6 +61,10 @@ export default function App() {
 
   if (state.phase === 'review' && state.exam) {
     return <ReviewPage state={state} onBack={backToResults} />
+  }
+
+  if (state.phase === 'practice' && state.exam) {
+    return <PracticePage state={state} onExit={exitPractice} />
   }
 
   return null

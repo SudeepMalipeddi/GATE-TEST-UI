@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ExamHeader, type FontSize } from '../components/ExamHeader'
 import { QuestionPalette } from '../components/QuestionPalette'
 import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
+import { AskAI } from '../components/AskAI'
 import { LayoutGrid, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react'
 import type { ExamState, Question, QuestionStatus } from '../types/exam'
 import { useEffect } from 'react'
@@ -187,6 +188,8 @@ export function ReviewPage({ state, onBack }: Props) {
                 totalQuestions={totalQuestions}
                 userAnswer={answers[question.id]}
               />
+
+              <AskAI question={question} />
 
               {/* Navigation */}
               <div className="flex items-center gap-2 mt-6 pt-4 border-t border-border">

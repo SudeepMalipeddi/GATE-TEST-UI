@@ -16,6 +16,7 @@ import { QuestionPalette } from '../components/QuestionPalette'
 import { QuestionDisplay } from '../components/QuestionDisplay'
 import { ActionBar } from '../components/ActionBar'
 import { Legend } from '../components/Legend'
+import { SectionProgress } from '../components/SectionProgress'
 import { LayoutGrid, Send } from 'lucide-react'
 import type { ExamState } from '../types/exam'
 
@@ -94,6 +95,7 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
   const sidebar = (
     <div className="flex flex-col h-full bg-card">
       <TimerBlock secondsRemaining={timeRemaining} />
+      <SectionProgress exam={exam} statuses={statuses} />
       <QuestionPalette
         exam={exam}
         currentSection={currentSection}

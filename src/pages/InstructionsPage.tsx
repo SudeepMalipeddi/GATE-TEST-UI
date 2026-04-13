@@ -3,12 +3,13 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { ExamHeader } from '../components/ExamHeader'
-import { ChevronRight, Info } from 'lucide-react'
+import { ChevronRight, Info, BookOpen } from 'lucide-react'
 import type { ExamData } from '../types/exam'
 
 interface Props {
   exam: ExamData
   onStart: () => void
+  onPractice: () => void
 }
 
 const instructions = [
@@ -33,7 +34,7 @@ const statusLegend = [
   { cls: 'status-review-answered',                    label: 'Answered & Marked — Saved answer, also marked for review' },
 ]
 
-export function InstructionsPage({ exam, onStart }: Props) {
+export function InstructionsPage({ exam, onStart, onPractice }: Props) {
   return (
     <div className="min-h-screen bg-background">
       <ExamHeader exam={exam} fontSize="md" onFontSizeChange={() => {}} />
@@ -105,10 +106,16 @@ export function InstructionsPage({ exam, onStart }: Props) {
 
           <CardFooter className="border-t border-border p-4 justify-between">
             <p className="text-xs text-muted-foreground">By proceeding, you agree to the examination rules.</p>
-            <Button onClick={onStart} size="sm" className="gap-2">
-              Start Exam
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onPractice} size="sm" className="gap-2">
+                <BookOpen className="w-4 h-4" />
+                Practice Mode
+              </Button>
+              <Button onClick={onStart} size="sm" className="gap-2">
+                Start Exam
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       </div>

@@ -161,6 +161,22 @@ export function useExamState() {
     localStorage.removeItem(STORAGE_KEY)
   }, [])
 
+  const enterPractice = useCallback(() => {
+    setState(s => ({
+      ...s,
+      phase: 'practice',
+      currentSection: 0,
+      currentQuestion: 0,
+      answers: {},
+      statuses: s.exam ? initStatuses(s.exam) : {},
+    }))
+  }, [])
+
+  const exitPractice = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY)
+    setState(selectState)
+  }, [])
+
   const enterReview = useCallback(() => {
     setState(s => ({ ...s, phase: 'review', currentSection: 0, currentQuestion: 0 }))
   }, [])
@@ -187,6 +203,8 @@ export function useExamState() {
     submitExam,
     enterReview,
     backToResults,
+    enterPractice,
+    exitPractice,
     resetExam,
   }
 }
