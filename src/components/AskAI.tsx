@@ -356,9 +356,9 @@ function Setup({ onDone }: { onDone: () => void }) {
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground">
             Get a free API key at{' '}
-            <a href="https://ai.google.dev" target="_blank" rel="noreferrer"
+            <a href="https://aistudio.google.com" target="_blank" rel="noreferrer"
               className="underline underline-offset-2 hover:text-foreground">
-              ai.google.dev
+              aistudio.google.com
             </a>{' '}— no credit card required.
           </p>
 
