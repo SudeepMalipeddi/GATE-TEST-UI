@@ -46,7 +46,7 @@ export default function App() {
   }
 
   if (state.phase === 'instructions' && state.exam) {
-    return <InstructionsPage exam={state.exam} onStart={startExam} onPractice={enterPractice} />
+    return <InstructionsPage exam={state.exam} onStart={startExam} onPractice={enterPractice} onBack={resetExam} />
   }
 
   if (state.phase === 'exam' && state.exam) {
@@ -60,6 +60,7 @@ export default function App() {
         onPrev={prevQuestion}
         onGoTo={goToQuestion}
         onSubmit={submitExam}
+        onCancel={resetExam}
       />
     )
   }

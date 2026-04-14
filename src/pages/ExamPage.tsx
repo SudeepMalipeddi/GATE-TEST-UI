@@ -29,11 +29,13 @@ interface Props {
   onPrev: () => void
   onGoTo: (sIdx: number, qIdx: number) => void
   onSubmit: () => void
+  onCancel: () => void
 }
 
-export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, onPrev, onGoTo, onSubmit }: Props) {
+export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, onPrev, onGoTo, onSubmit, onCancel }: Props) {
   const { exam, currentSection, currentQuestion, answers, statuses, timeRemaining } = state
   const [submitOpen, setSubmitOpen] = useState(false)
+  const [cancelOpen, setCancelOpen] = useState(false)
   const [localAnswer, setLocalAnswer] = useState<string | string[] | undefined>(undefined)
   const [fontSize, setFontSize] = useState<FontSize>(
     () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
@@ -120,7 +122,7 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
 
   return (
     <div className="min-h-screen bg-background">
-      <ExamHeader exam={exam} fontSize={fontSize} onFontSizeChange={handleFontSize} />
+      <ExamHeader exam={exam} fontSize={fontSize} onFontSizeChange={handleFontSize} onBack={() => setCancelOpen(true)} />
 
       <div className="mt-[60px] flex h-[calc(100vh-60px)]">
         {/* LEFT */}
@@ -186,6 +188,22 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
           {sidebar}
         </aside>
       </div>
+
+      {/* Cancel / exit dialog */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Exit Exam?</DialogTitle>
+            <DialogDescription>
+              Your progress will be lost. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>Stay</Button>
+            <Button variant="destructive" onClick={onCancel}>Exit</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Submit dialog */}
       <Dialog open={submitOpen} onOpenChange={setSubmitOpen}>

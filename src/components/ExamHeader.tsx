@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Calculator } from './Calculator'
-import { Calculator as CalculatorIcon, ALargeSmall } from 'lucide-react'
+import { Calculator as CalculatorIcon, ALargeSmall, ChevronLeft } from 'lucide-react'
 import type { ExamData } from '../types/exam'
 
 export type FontSize = 'sm' | 'md' | 'lg'
@@ -9,6 +9,7 @@ interface Props {
   exam: ExamData
   fontSize: FontSize
   onFontSizeChange: (s: FontSize) => void
+  onBack?: () => void
 }
 
 const SIZES: FontSize[] = ['sm', 'md', 'lg']
@@ -19,7 +20,7 @@ const SIZE_CLASS: Record<FontSize, string> = {
   lg: 'text-[16px]',
 }
 
-export function ExamHeader({ exam, fontSize, onFontSizeChange }: Props) {
+export function ExamHeader({ exam, fontSize, onFontSizeChange, onBack }: Props) {
   const [calcOpen, setCalcOpen] = useState(false)
 
   const cycleFont = () => {
@@ -30,6 +31,17 @@ export function ExamHeader({ exam, fontSize, onFontSizeChange }: Props) {
   return (
     <>
       <header className="fixed top-0 inset-x-0 h-[60px] bg-card border-b border-border z-50 flex items-center px-4 gap-4">
+        {onBack && (
+          <button
+            onClick={onBack}
+            title="Exit exam"
+            className="flex items-center gap-1 px-2 py-1 rounded border border-border hover:bg-accent transition-colors text-muted-foreground hover:text-foreground flex-shrink-0"
+            aria-label="Exit exam"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="text-xs hidden sm:inline">Exit</span>
+          </button>
+        )}
         <span className="font-semibold text-sm text-foreground truncate flex-1" title={exam.name}>
           {exam.name}
         </span>

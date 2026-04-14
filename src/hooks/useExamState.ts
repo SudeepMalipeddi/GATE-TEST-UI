@@ -220,7 +220,11 @@ export function useExamState() {
         if (statuses[firstQ.id] === 'not_visited') statuses[firstQ.id] = 'not_answered'
         return { ...s, currentSection: s.currentSection + 1, currentQuestion: 0, statuses, timeSpent }
       }
-      return { ...s, timeSpent }
+      // Last question of last section — wrap to Q1
+      const firstQ = s.exam.sections[0].questions[0]
+      const statuses = { ...s.statuses }
+      if (statuses[firstQ.id] === 'not_visited') statuses[firstQ.id] = 'not_answered'
+      return { ...s, currentSection: 0, currentQuestion: 0, statuses, timeSpent }
     })
   }, [])
 

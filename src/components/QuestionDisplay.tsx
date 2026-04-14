@@ -52,9 +52,23 @@ function MathContent({ html, className }: { html: string; className?: string }) 
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
 
-    const cleaned = html
-      .replace(/\$\$([\s\S]*?)\$\$/g,   (_, m) => `$$${cleanMathBlock(m)}$$`)
-      .replace(/\\\[([\s\S]*?)\\\]/g,   (_, m) => `\\[${cleanMathBlock(m)}\\]`)
+    // Split on existing $$...$$ blocks so the \begin fixups never fire inside them.
+    // Even-indexed parts are outside $$...$$; odd-indexed parts ARE $$...$$ blocks.
+    const ddParts = html.split(/((?<!\$)\$\$[\s\S]*?\$\$(?!\$))/)
+    const fixed = ddParts.map((part, i) => {
+      if (i % 2 === 1) {
+        // Already a valid $$...$$ block — only clean HTML artifacts inside it
+        return part.replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+      }
+      // Outside $$...$$ — apply fixups for broken \begin patterns
+      return part
+        // \begin{env}...\end{env} with no opening delimiter, followed by 1–3 stray $
+        .replace(/(?<!\$)(\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\})\s*\${1,3}/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+        // $\begin{env}...\end{env}$ — $ adjacent to \begin (promote to display)
+        .replace(/\$\s*(\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\})\s*\$/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+    }).join('')
+    const cleaned = fixed
+      .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => `\\[${cleanMathBlock(m)}\\]`)
 
     el.innerHTML = cleaned
     renderMathInElement(el, KATEX_OPTIONS)

@@ -35,8 +35,8 @@ export function ActionBar({ onPrev, onClear, onMarkReview, onSaveNext, hasPrev, 
           <Bookmark className="w-3.5 h-3.5" />
           Mark & Next
         </Button>
-        <Button size="sm" onClick={onSaveNext} disabled={!hasNext && !hasAnswer} className="gap-1">
-          Save & Next
+        <Button size="sm" onClick={onSaveNext} className="gap-1">
+          {hasNext ? 'Save & Next' : 'Save & Go to Q1'}
           <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
