@@ -28,8 +28,8 @@ function isCorrect(q: Question, answer: string | string[] | undefined): boolean 
 
 export function PracticePage({ state, onExit }: Props) {
   const { exam } = state
-  const [currentSection, setCurrentSection] = useState(0)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [currentSection, setCurrentSection] = useState(state.currentSection)
+  const [currentQuestion, setCurrentQuestion] = useState(state.currentQuestion)
   const [localAnswers, setLocalAnswers] = useState<Record<string, string | string[]>>({})
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const [fontSize, setFontSize] = useState<FontSize>(
@@ -213,6 +213,7 @@ export function PracticePage({ state, onExit }: Props) {
                     questionNumber={questionNumberInExam}
                     totalQuestions={totalQuestions}
                     userAnswer={localAnswer}
+                    examName={exam.name}
                   />
                   <AskAI question={question} />
                 </>

@@ -1,14 +1,24 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import renderMathInElement from 'katex/contrib/auto-render'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, XCircle, MinusCircle } from 'lucide-react'
+import { CheckCircle2, XCircle, MinusCircle, Copy, Check, Bookmark, BookmarkCheck, Clock } from 'lucide-react'
 import type { Question } from '../types/exam'
+import { getBookmark, saveBookmark, removeBookmark } from '../lib/bookmarks'
+
+function fmtSeconds(secs: number): string {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  if (m === 0) return `${s}s`
+  return `${m}m ${s}s`
+}
 
 interface Props {
   question: Question
   questionNumber: number
   totalQuestions: number
   userAnswer: string | string[] | undefined
+  examName?: string
+  timeSpentSeconds?: number
 }
 
 const typeLabel: Record<Question['type'], string> = {
@@ -99,8 +109,48 @@ function natCorrect(userAnswer: string | string[] | undefined, correctAnswer: st
   return String(userAnswer ?? '').trim() === String(correctAnswer).trim()
 }
 
-export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer }: Props) {
+export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer, examName, timeSpentSeconds }: Props) {
   const { correctAnswer } = question
+  const [copied, setCopied] = useState(false)
+  const [bookmarked, setBookmarked] = useState(() => !!getBookmark(question.id))
+  const [note, setNote] = useState(() => getBookmark(question.id)?.note ?? '')
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Re-sync when question changes
+  useEffect(() => {
+    const bm = getBookmark(question.id)
+    setBookmarked(!!bm)
+    setNote(bm?.note ?? '')
+  }, [question.id])
+
+  const handleCopy = () => {
+    const text = new DOMParser().parseFromString(question.text, 'text/html').body.textContent ?? ''
+    navigator.clipboard.writeText(text.trim()).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  const toggleBookmark = () => {
+    if (bookmarked) {
+      removeBookmark(question.id)
+      setBookmarked(false)
+      setNote('')
+    } else {
+      const preview = (new DOMParser().parseFromString(question.text, 'text/html').body.textContent ?? '').trim().slice(0, 300)
+      saveBookmark({ questionId: question.id, examName: examName ?? '', questionPreview: preview, note: '', date: new Date().toISOString() })
+      setBookmarked(true)
+    }
+  }
+
+  const handleNoteChange = (val: string) => {
+    setNote(val)
+    if (noteTimer.current) clearTimeout(noteTimer.current)
+    noteTimer.current = setTimeout(() => {
+      const existing = getBookmark(question.id)
+      if (existing) saveBookmark({ ...existing, note: val })
+    }, 400)
+  }
 
   // Compute overall outcome for the score indicator
   let outcome: 'correct' | 'wrong' | 'skipped'
@@ -150,11 +200,51 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
           </Badge>
         )}
 
-        <span className="ml-auto text-xs text-muted-foreground italic">
-          +{question.marks} mark{question.marks > 1 ? 's' : ''}
-          {question.penalty > 0 && ` | −${question.penalty} penalty`}
-        </span>
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-xs text-muted-foreground italic">
+            +{question.marks} mark{question.marks > 1 ? 's' : ''}
+            {question.penalty > 0 && ` | −${question.penalty} penalty`}
+          </span>
+          {timeSpentSeconds !== undefined && timeSpentSeconds > 0 && (
+            <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+              <Clock className="w-3 h-3" />
+              {fmtSeconds(timeSpentSeconds)}
+            </span>
+          )}
+          <button
+            onClick={handleCopy}
+            title="Copy question text"
+            className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex-shrink-0"
+          >
+            {copied
+              ? <Check className="w-3.5 h-3.5 text-[#22C55E]" />
+              : <Copy className="w-3.5 h-3.5" />}
+          </button>
+          <button
+            onClick={toggleBookmark}
+            title={bookmarked ? 'Remove bookmark' : 'Bookmark this question'}
+            className={`p-1 rounded hover:bg-muted transition-colors flex-shrink-0 ${bookmarked ? 'text-amber-400' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {bookmarked
+              ? <BookmarkCheck className="w-3.5 h-3.5" />
+              : <Bookmark className="w-3.5 h-3.5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Note editor — shown when bookmarked */}
+      {bookmarked && (
+        <div className="rounded-md border border-amber-400/30 bg-amber-400/5 px-3 py-2">
+          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wide mb-1">Note</p>
+          <textarea
+            value={note}
+            onChange={e => handleNoteChange(e.target.value)}
+            placeholder="Add a note for this question…"
+            rows={2}
+            className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground resize-none outline-none leading-relaxed"
+          />
+        </div>
+      )}
 
       {/* Question text */}
       <MathContent

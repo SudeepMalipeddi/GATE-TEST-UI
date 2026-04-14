@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -8,11 +8,13 @@ import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
 import { LayoutGrid, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react'
 import type { ExamState, Question, QuestionStatus } from '../types/exam'
-import { useEffect } from 'react'
+
+type ReviewFilter = 'all' | 'correct' | 'wrong' | 'skipped'
 
 interface Props {
   state: ExamState
-  onBack: () => void   // back to results page
+  onBack: () => void
+  backLabel?: string   // defaults to 'Results'
 }
 
 // Map a question's outcome to a palette status for visual feedback
@@ -34,10 +36,11 @@ function reviewPaletteStatus(q: Question, answer: string | string[] | undefined)
   return correct ? 'answered' : 'not_answered'
 }
 
-export function ReviewPage({ state, onBack }: Props) {
+export function ReviewPage({ state, onBack, backLabel = 'Results' }: Props) {
   const { exam, answers } = state
   const [currentSection, setCurrentSection] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all')
   const [fontSize, setFontSize] = useState<FontSize>(
     () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
   )
@@ -60,32 +63,87 @@ export function ReviewPage({ state, onBack }: Props) {
     exam.sections.slice(0, currentSection).reduce((a, s) => a + s.questions.length, 0) +
     currentQuestion + 1
 
-  const hasPrev = currentSection > 0 || currentQuestion > 0
-  const hasNext =
-    currentSection < exam.sections.length - 1 ||
-    currentQuestion < section.questions.length - 1
-
   const goTo = (sIdx: number, qIdx: number) => {
     setCurrentSection(sIdx)
     setCurrentQuestion(qIdx)
   }
 
+  // Flat question list for filter-aware navigation
+  const flatQuestions = exam.sections.flatMap((sec, sIdx) =>
+    sec.questions.map((q, qIdx) => ({ sIdx, qIdx, q }))
+  )
+
+  const getStatus = (q: Question) => reviewPaletteStatus(q, answers[q.id])
+
+  const filteredList = flatQuestions.filter(({ q }) => {
+    if (reviewFilter === 'all') return true
+    const status = getStatus(q)
+    if (reviewFilter === 'correct') return status === 'answered'
+    if (reviewFilter === 'wrong')   return status === 'not_answered'
+    return status === 'not_visited' // skipped
+  })
+
+  const filterCounts = {
+    all:     flatQuestions.length,
+    correct: flatQuestions.filter(({ q }) => getStatus(q) === 'answered').length,
+    wrong:   flatQuestions.filter(({ q }) => getStatus(q) === 'not_answered').length,
+    skipped: flatQuestions.filter(({ q }) => getStatus(q) === 'not_visited').length,
+  }
+
+  const filteredIdx = filteredList.findIndex(
+    ({ sIdx, qIdx }) => sIdx === currentSection && qIdx === currentQuestion
+  )
+
+  const handleFilterChange = (f: ReviewFilter) => {
+    setReviewFilter(f)
+    if (f === 'all') return
+    const list = flatQuestions.filter(({ q }) => {
+      const s = getStatus(q)
+      if (f === 'correct') return s === 'answered'
+      if (f === 'wrong')   return s === 'not_answered'
+      return s === 'not_visited'
+    })
+    if (list.length > 0) goTo(list[0].sIdx, list[0].qIdx)
+  }
+
+  const hasPrev = reviewFilter === 'all'
+    ? currentSection > 0 || currentQuestion > 0
+    : filteredIdx > 0
+
+  const hasNext = reviewFilter === 'all'
+    ? currentSection < exam.sections.length - 1 || currentQuestion < section.questions.length - 1
+    : filteredIdx >= 0 && filteredIdx < filteredList.length - 1
+
   const goPrev = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(q => q - 1)
-    } else if (currentSection > 0) {
-      const prevSec = exam.sections[currentSection - 1]
-      setCurrentSection(s => s - 1)
-      setCurrentQuestion(prevSec.questions.length - 1)
+    if (reviewFilter !== 'all') {
+      if (filteredIdx > 0) {
+        const { sIdx, qIdx } = filteredList[filteredIdx - 1]
+        goTo(sIdx, qIdx)
+      }
+    } else {
+      if (currentQuestion > 0) {
+        setCurrentQuestion(q => q - 1)
+      } else if (currentSection > 0) {
+        const prevSec = exam.sections[currentSection - 1]
+        setCurrentSection(s => s - 1)
+        setCurrentQuestion(prevSec.questions.length - 1)
+      }
     }
   }
 
   const goNext = () => {
-    if (currentQuestion < section.questions.length - 1) {
-      setCurrentQuestion(q => q + 1)
-    } else if (currentSection < exam.sections.length - 1) {
-      setCurrentSection(s => s + 1)
-      setCurrentQuestion(0)
+    if (reviewFilter !== 'all') {
+      if (filteredIdx >= 0 && filteredIdx < filteredList.length - 1) {
+        const { sIdx, qIdx } = filteredList[filteredIdx + 1]
+        goTo(sIdx, qIdx)
+      }
+    } else {
+      if (currentQuestion < section.questions.length - 1) {
+        setCurrentQuestion(q => q + 1)
+      } else if (currentSection < exam.sections.length - 1) {
+        setCurrentSection(s => s + 1)
+        setCurrentQuestion(0)
+      }
     }
   }
 
@@ -96,6 +154,8 @@ export function ReviewPage({ state, onBack }: Props) {
       reviewStatuses[q.id] = reviewPaletteStatus(q, answers[q.id])
     }
   }
+
+  const isHistoryReview = state.phase === 'history-review'
 
   const sidebar = (
     <div className="flex flex-col h-full bg-card">
@@ -136,7 +196,7 @@ export function ReviewPage({ state, onBack }: Props) {
           onClick={onBack}
         >
           <BarChart2 className="w-3.5 h-3.5" />
-          Back to Results
+          Back to {backLabel}
         </Button>
       </div>
     </div>
@@ -179,6 +239,40 @@ export function ReviewPage({ state, onBack }: Props) {
             </Sheet>
           </div>
 
+          {/* History mode banner */}
+          {isHistoryReview && (
+            <div className="mb-3 px-3 py-2 rounded-md bg-muted border border-border text-xs text-muted-foreground flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+              Viewing a past attempt — answers are read-only
+            </div>
+          )}
+
+          {/* Filter bar */}
+          <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+            {(['all', 'correct', 'wrong', 'skipped'] as ReviewFilter[]).map(f => (
+              <button
+                key={f}
+                onClick={() => handleFilterChange(f)}
+                className={`text-xs px-3 py-1.5 rounded border font-medium transition-colors capitalize ${
+                  reviewFilter === f
+                    ? 'bg-foreground text-background border-foreground'
+                    : 'bg-transparent text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
+                }`}
+              >
+                {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+                <span className="ml-1.5 font-normal opacity-70">{filterCounts[f]}</span>
+              </button>
+            ))}
+            {reviewFilter !== 'all' && filteredIdx >= 0 && (
+              <span className="ml-auto text-xs text-muted-foreground">
+                {filteredIdx + 1} of {filteredList.length}
+              </span>
+            )}
+            {reviewFilter !== 'all' && filteredList.length === 0 && (
+              <span className="ml-2 text-xs text-muted-foreground italic">No questions</span>
+            )}
+          </div>
+
           {/* Question card */}
           <Card>
             <CardContent className="p-5">
@@ -187,6 +281,8 @@ export function ReviewPage({ state, onBack }: Props) {
                 questionNumber={questionNumberInExam}
                 totalQuestions={totalQuestions}
                 userAnswer={answers[question.id]}
+                examName={exam.name}
+                timeSpentSeconds={state.timeSpent[question.id]}
               />
 
               <AskAI question={question} />

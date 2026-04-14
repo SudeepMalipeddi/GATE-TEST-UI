@@ -39,6 +39,20 @@ export interface ExamState {
   currentQuestion: number
   answers: Record<string, string | string[]>
   statuses: Record<string, QuestionStatus>
+  timeSpent: Record<string, number>   // seconds per question ID, tracked during exam
   timeRemaining: number
-  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review' | 'practice'
+  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review' | 'history-review' | 'practice'
+}
+
+export interface AttemptRecord {
+  examName: string
+  date: string        // ISO string
+  score: number       // final score after penalties, floored at 0
+  maxScore: number
+  correct: number
+  wrong: number
+  skipped: number
+  totalQuestions: number
+  answers?: Record<string, string | string[]>   // undefined on old records without answer data
+  timeSpent?: Record<string, number>            // seconds per question, undefined on old records
 }

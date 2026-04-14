@@ -2,8 +2,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
-import { CheckCircle2, XCircle, BookMarked, RotateCcw, ClipboardList } from 'lucide-react'
+import { CheckCircle2, XCircle, BookMarked, RotateCcw, ClipboardList, Clock } from 'lucide-react'
 import type { ExamState } from '../types/exam'
+
+function fmtSeconds(secs: number): string {
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  if (m === 0) return `${s}s`
+  return `${m}m ${s}s`
+}
 
 interface Props {
   state: ExamState
@@ -12,7 +19,7 @@ interface Props {
 }
 
 export function ResultsPage({ state, onReview, onReset }: Props) {
-  const { exam, answers, statuses } = state
+  const { exam, answers, statuses, timeSpent } = state
   if (!exam) return null
 
   const answered    = Object.values(statuses).filter(s => s === 'answered' || s === 'review_answered').length
@@ -62,6 +69,22 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
     }
     return { name: section.name, total: section.questions.length, answered: secAnswered, correct: secCorrect, score: secScore }
   })
+
+  // Time analysis
+  const allQsTime = exam.sections.flatMap((sec, sIdx) =>
+    sec.questions.map((q, qIdx) => ({
+      q,
+      sectionName: sec.name,
+      qNum: exam.sections.slice(0, sIdx).reduce((a, s) => a + s.questions.length, 0) + qIdx + 1,
+      secs: timeSpent[q.id] ?? 0,
+    }))
+  )
+  const totalTimeUsed = allQsTime.reduce((a, x) => a + x.secs, 0)
+  const slowest = [...allQsTime].filter(x => x.secs > 0).sort((a, b) => b.secs - a.secs).slice(0, 5)
+  const sectionTimes = exam.sections.map(sec => ({
+    name: sec.name,
+    secs: sec.questions.reduce((a, q) => a + (timeSpent[q.id] ?? 0), 0),
+  }))
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -136,6 +159,58 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
             </Button>
           </CardFooter>
         </Card>
+
+        {/* Time analysis — only shown when tracking data exists */}
+        {totalTimeUsed > 0 && (
+          <Card>
+            <CardHeader className="pb-3 border-b border-border">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                Time Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-4">
+              {/* Total + section breakdown */}
+              <div>
+                <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                  <span>Total time tracked</span>
+                  <span className="font-semibold text-foreground">{fmtSeconds(totalTimeUsed)}</span>
+                </div>
+                {exam.sections.length > 1 && sectionTimes.map(({ name, secs }) => secs > 0 && (
+                  <div key={name} className="flex justify-between text-xs text-muted-foreground py-0.5">
+                    <span className="truncate mr-4">{name}</span>
+                    <span>{fmtSeconds(secs)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Slowest questions */}
+              {slowest.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Most time spent
+                    </p>
+                    <div className="space-y-1">
+                      {slowest.map(({ qNum, sectionName, secs }) => (
+                        <div key={qNum} className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">
+                            Q.{qNum}
+                            {exam.sections.length > 1 && (
+                              <span className="ml-1 opacity-60">· {sectionName}</span>
+                            )}
+                          </span>
+                          <span className="font-medium text-foreground tabular-nums">{fmtSeconds(secs)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

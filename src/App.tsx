@@ -23,6 +23,8 @@ export default function App() {
     enterPractice,
     exitPractice,
     resetExam,
+    reviewHistoryAttempt,
+    openBookmark,
   } = useExamState()
 
   const handleSaveNext = (id: string, answer: string | string[] | undefined) => {
@@ -33,7 +35,7 @@ export default function App() {
   }
 
   if (state.phase === 'select') {
-    return <ExamSelectPage onSelect={selectExam} />
+    return <ExamSelectPage onSelect={selectExam} onReviewAttempt={reviewHistoryAttempt} onOpenBookmark={openBookmark} />
   }
 
   if (state.phase === 'instructions' && state.exam) {
@@ -59,8 +61,14 @@ export default function App() {
     return <ResultsPage state={state} onReview={enterReview} onReset={resetExam} />
   }
 
-  if (state.phase === 'review' && state.exam) {
-    return <ReviewPage state={state} onBack={backToResults} />
+  if ((state.phase === 'review' || state.phase === 'history-review') && state.exam) {
+    return (
+      <ReviewPage
+        state={state}
+        onBack={state.phase === 'history-review' ? resetExam : backToResults}
+        backLabel={state.phase === 'history-review' ? 'Exams' : 'Results'}
+      />
+    )
   }
 
   if (state.phase === 'practice' && state.exam) {

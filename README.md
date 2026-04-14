@@ -190,11 +190,13 @@ Untimed mode for working through questions at your own pace with immediate feedb
 After submitting an exam you see a results summary and can review every question.
 
 **Results page:**
+
 - Total score and maximum marks
 - Section-by-section breakdown: correct / wrong / skipped counts and marks earned
 - Penalty deduction summary for MCQ negative marking
 
 **Review page:**
+
 - Browse all questions in read-only mode
 - Each option is highlighted: correct answer (green border), your answer if wrong (red border), missed correct options for MSQ
 - Outcome badge per question: Correct / Wrong / Skipped
@@ -208,6 +210,7 @@ An inline chat panel that explains why the correct answer is correct. Available 
 Supports two AI providers — see [AI Provider Setup](#ai-provider-setup) for configuration.
 
 **Chat features:**
+
 - Ask follow-up questions — the full conversation history is sent with each request
 - Responses rendered as rich markdown: bold, lists, code blocks, and LaTeX math
 - Collapsible **Reasoning** block for thinking models (e.g., Gemma 4, DeepSeek-R1, gemini-2.5-flash)
@@ -372,9 +375,8 @@ gate-practice-ui/
 │   │   └── useExamState.ts       # All exam state and actions (single source of truth)
 │   ├── pages/
 │   │   ├── ExamPage.tsx          # Timed exam interface
-│   │   ├── ExamSelectPage.tsx    # Exam catalogue with year/subject grouping
+│   │   ├── ExamSelectPage.tsx    # Exam catalogue with year/subject grouping + upload
 │   │   ├── InstructionsPage.tsx  # Pre-exam instructions
-│   │   ├── LoginPage.tsx         # Login screen
 │   │   ├── PracticePage.tsx      # Untimed practice with instant feedback
 │   │   ├── ResultsPage.tsx       # Score summary after submission
 │   │   └── ReviewPage.tsx        # Post-exam answer review
@@ -392,7 +394,7 @@ gate-practice-ui/
 ### Key architectural decisions
 
 - **Single state hook**: all exam state lives in `useExamState`. Pages receive state and callbacks as props — no prop drilling through context.
-- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` (`select` | `instructions` | `exam` | `results` | `review` | `practice`).
+- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` (`select` | `instructions` | `exam` | `results` | `review` | `history-review` | `practice`).
 - **Exam persistence**: `useExamState` writes the in-progress exam state to `localStorage` on every change. If the page is refreshed mid-exam, the state is restored automatically.
 - **Practice mode is local-only**: answers and checked state in practice mode live in `PracticePage` component state, not in `useExamState`. Nothing is persisted.
 - **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these synchronously at parse time via `rehype-katex`.
@@ -458,6 +460,160 @@ Each file in `public/exams/` follows this schema:
 ```
 
 The `id` field corresponds to the filename without `.json`.
+
+---
+
+## Adding Custom Exams
+
+There are two ways to add your own exam papers.
+
+### Method 1 — Upload via the UI (one-off, no rebuild needed)
+
+Click **Upload exam** in the top-right corner of the exam select page, or drag a `.json` file anywhere onto the page. The app validates the schema and shows a preview before starting. The exam runs exactly like a built-in one — timed, with full scoring and review — but is not saved to the catalog permanently.
+
+Use this method for quick one-off tests.
+
+### Method 2 — Add to the catalog (permanent, survives page refresh)
+
+Place your exam file in `public/exams/` and add an entry to `public/exams/catalog.json`. The exam then appears in the year/subject tabs automatically.
+
+**Step 1 — Create the exam file**
+
+Name the file with a URL-safe slug, e.g. `public/exams/my-algorithms-test.json`:
+
+```json
+{
+  "name": "2025 | Algorithms Practice Test",
+  "durationMinutes": 60,
+  "sections": [
+    {
+      "name": "General Aptitude",
+      "questions": [
+        {
+          "id": "q-apt-1",
+          "text": "A train travels from city A to city B at 60 km/h and returns at 40 km/h. What is the average speed for the entire journey (in km/h)?",
+          "type": "NAT",
+          "options": [],
+          "correctAnswer": "48",
+          "marks": 1,
+          "penalty": 0
+        },
+        {
+          "id": "q-apt-2",
+          "text": "Choose the pair that best expresses a relationship similar to: <b>Scalpel : Surgeon</b>",
+          "type": "MCQ",
+          "options": [
+            { "id": "a", "text": "Brush : Painter" },
+            { "id": "b", "text": "Hammer : Wood" },
+            { "id": "c", "text": "Needle : Thread" },
+            { "id": "d", "text": "Pen : Ink" }
+          ],
+          "correctAnswer": "a",
+          "marks": 1,
+          "penalty": 0.33
+        }
+      ]
+    },
+    {
+      "name": "Computer Science",
+      "questions": [
+        {
+          "id": "q-cs-1",
+          "text": "Consider the following recurrence: $$T(n) = 2T\\left(\\frac{n}{2}\\right) + n$$ By the Master Theorem, the solution is:",
+          "type": "MCQ",
+          "options": [
+            { "id": "a", "text": "$O(n)$" },
+            { "id": "b", "text": "$O(n \\log n)$" },
+            { "id": "c", "text": "$O(n^2)$" },
+            { "id": "d", "text": "$O(\\log n)$" }
+          ],
+          "correctAnswer": "b",
+          "marks": 2,
+          "penalty": 0.67
+        },
+        {
+          "id": "q-cs-2",
+          "text": "Which of the following data structures support $O(1)$ amortized insertion?",
+          "type": "MSQ",
+          "options": [
+            { "id": "a", "text": "Dynamic array (e.g. ArrayList)" },
+            { "id": "b", "text": "Singly linked list (insert at head)" },
+            { "id": "c", "text": "Min-heap" },
+            { "id": "d", "text": "Hash table with chaining (average case)" }
+          ],
+          "correctAnswer": ["a", "b", "d"],
+          "marks": 2,
+          "penalty": 0
+        },
+        {
+          "id": "q-cs-3",
+          "text": "The number of distinct binary trees with exactly 3 nodes is:",
+          "type": "NAT",
+          "options": [],
+          "correctAnswer": "5",
+          "marks": 1,
+          "penalty": 0
+        }
+      ]
+    }
+  ]
+}
+```
+
+> A ready-to-use sample with 12 questions covering all three types is available at `/home/sudeep/sample_exam.json` if you're running this locally.
+
+**Step 2 — Add an entry to `catalog.json`**
+
+Open `public/exams/catalog.json` and prepend an object to the array:
+
+```json
+{
+  "id": "my-algorithms-test",
+  "name": "2025 | Algorithms Practice Test",
+  "durationMinutes": 60,
+  "totalQuestions": 5,
+  "sectionNames": ["General Aptitude", "Computer Science"]
+}
+```
+
+The rules:
+- `id` must match the filename exactly (without `.json`)
+- `name` controls which year tab the exam appears under — include the year (`2025`, `2024`, …) for it to be grouped there; omit it and the exam lands under **Other**
+- `totalQuestions` is display-only; set it to the actual count
+- `sectionNames` is display-only; used only in the project structure doc
+
+**Step 3 — Restart the dev server (or rebuild)**
+
+If you're running `bun run dev`, the server picks up changes to the `public/` folder automatically — just refresh the page. For a production build, run `bun run build` again.
+
+### Schema reference
+
+```
+ExamData
+├── name            string       — shown in tabs and results
+├── durationMinutes number       — countdown timer
+└── sections        Section[]
+    ├── name        string       — tab label during exam
+    └── questions   Question[]
+        ├── id              string          — must be unique across the whole file
+        ├── text            string          — HTML allowed; use $…$ and $$…$$ for LaTeX
+        ├── type            "MCQ"|"MSQ"|"NAT"
+        ├── options         Option[]        — required for MCQ/MSQ; empty [] for NAT
+        │   ├── id          string          — used as the answer key (e.g. "a", "b")
+        │   └── text        string          — option label
+        ├── correctAnswer   string          — MCQ/NAT: option id or number
+        │                   string[]        — MSQ: array of option ids
+        ├── marks           number          — points awarded for a correct answer
+        └── penalty         number          — points deducted for wrong MCQ answer
+                                              (use 0 for MSQ and NAT)
+```
+
+**Typical GATE marking schemes:**
+
+| Marks | MCQ penalty | MSQ penalty | NAT penalty |
+|---|---|---|---|
+| 1 mark | 0.33 | 0 | 0 |
+| 2 marks | 0.67 | 0 | 0 |
 
 ---
 
