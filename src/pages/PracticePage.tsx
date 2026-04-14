@@ -9,6 +9,7 @@ import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
 import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2 } from 'lucide-react'
 import type { ExamState, Question, QuestionStatus } from '../types/exam'
+import { natCorrect } from '../lib/natCorrect'
 
 interface Props {
   state: ExamState
@@ -23,7 +24,7 @@ function isCorrect(q: Question, answer: string | string[] | undefined): boolean 
     const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
     return JSON.stringify(u) === JSON.stringify(c)
   }
-  return String(answer).trim() === String(q.correctAnswer).trim()
+  return natCorrect(answer, q.correctAnswer)
 }
 
 export function PracticePage({ state, onExit }: Props) {

@@ -41,7 +41,7 @@ export interface ExamState {
   statuses: Record<string, QuestionStatus>
   timeSpent: Record<string, number>   // seconds per question ID, tracked during exam
   timeRemaining: number
-  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review' | 'history-review' | 'practice'
+  phase: 'select' | 'instructions' | 'exam' | 'results' | 'review' | 'history-review' | 'practice' | 'stats'
 }
 
 export interface AttemptRecord {

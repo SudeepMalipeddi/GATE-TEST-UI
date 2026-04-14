@@ -5,6 +5,7 @@ import { ExamPage } from './pages/ExamPage'
 import { ResultsPage } from './pages/ResultsPage'
 import { ReviewPage } from './pages/ReviewPage'
 import { PracticePage } from './pages/PracticePage'
+import { StatsPage } from './pages/StatsPage'
 
 export default function App() {
   const {
@@ -25,6 +26,8 @@ export default function App() {
     resetExam,
     reviewHistoryAttempt,
     openBookmark,
+    openStats,
+    closeStats,
   } = useExamState()
 
   const handleSaveNext = (id: string, answer: string | string[] | undefined) => {
@@ -35,7 +38,11 @@ export default function App() {
   }
 
   if (state.phase === 'select') {
-    return <ExamSelectPage onSelect={selectExam} onReviewAttempt={reviewHistoryAttempt} onOpenBookmark={openBookmark} />
+    return <ExamSelectPage onSelect={selectExam} onReviewAttempt={reviewHistoryAttempt} onOpenBookmark={openBookmark} onOpenStats={openStats} />
+  }
+
+  if (state.phase === 'stats') {
+    return <StatsPage onClose={closeStats} />
   }
 
   if (state.phase === 'instructions' && state.exam) {

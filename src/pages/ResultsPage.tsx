@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Separator } from '@/components/ui/separator'
 import { CheckCircle2, XCircle, BookMarked, RotateCcw, ClipboardList, Clock } from 'lucide-react'
 import type { ExamState } from '../types/exam'
+import { natCorrect } from '../lib/natCorrect'
 
 function fmtSeconds(secs: number): string {
   const m = Math.floor(secs / 60)
@@ -41,7 +42,7 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
         const correctArr = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
         if (JSON.stringify(userArr) === JSON.stringify(correctArr)) totalScore += q.marks
       } else if (q.type === 'NAT') {
-        if (String(ans).trim() === String(q.correctAnswer).trim()) totalScore += q.marks
+        if (natCorrect(ans, q.correctAnswer)) totalScore += q.marks
       }
     }
   }
@@ -62,7 +63,7 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
         const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
         correct = JSON.stringify(u) === JSON.stringify(c)
       } else if (q.type === 'NAT') {
-        correct = String(ans).trim() === String(q.correctAnswer).trim()
+        correct = natCorrect(ans, q.correctAnswer)
       }
       if (correct) { secCorrect++; secScore += q.marks }
       else if (q.type === 'MCQ') secScore -= q.penalty

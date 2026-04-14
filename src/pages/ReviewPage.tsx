@@ -8,6 +8,7 @@ import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
 import { LayoutGrid, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react'
 import type { ExamState, Question, QuestionStatus } from '../types/exam'
+import { natCorrect } from '../lib/natCorrect'
 
 type ReviewFilter = 'all' | 'correct' | 'wrong' | 'skipped'
 
@@ -30,7 +31,7 @@ function reviewPaletteStatus(q: Question, answer: string | string[] | undefined)
     const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
     correct = JSON.stringify(u) === JSON.stringify(c)
   } else if (q.type === 'NAT') {
-    correct = String(answer).trim() === String(q.correctAnswer).trim()
+    correct = natCorrect(answer, q.correctAnswer)
   }
   // answered = white fill (correct), not_answered = dark fill (wrong)
   return correct ? 'answered' : 'not_answered'

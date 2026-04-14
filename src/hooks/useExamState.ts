@@ -13,6 +13,8 @@ function saveAttemptToHistory(s: ExamState) {
       const ans = s.answers[q.id]
       const isEmpty = !ans || ans === '' || (Array.isArray(ans) && ans.length === 0)
       if (isEmpty) { skipped++; continue }
+      const noCorrectAnswer = !q.correctAnswer || q.correctAnswer === '' || (Array.isArray(q.correctAnswer) && q.correctAnswer.length === 0)
+      if (noCorrectAnswer) { skipped++; continue }
       let isCorrect = false
       if (q.type === 'MCQ') isCorrect = ans === q.correctAnswer
       else if (q.type === 'MSQ') {
@@ -20,7 +22,20 @@ function saveAttemptToHistory(s: ExamState) {
         const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
         isCorrect = JSON.stringify(u) === JSON.stringify(c)
       } else {
-        isCorrect = String(ans).trim() === String(q.correctAnswer).trim()
+        // NAT: support range format "min:max"
+        const userStr = String(ans).trim()
+        const correctStr = String(q.correctAnswer).trim()
+        if (correctStr.includes(':')) {
+          const [minStr, maxStr] = correctStr.split(':')
+          const userNum = parseFloat(userStr)
+          const minNum = parseFloat(minStr)
+          const maxNum = parseFloat(maxStr)
+          if (!isNaN(userNum) && !isNaN(minNum) && !isNaN(maxNum)) {
+            isCorrect = userNum >= minNum && userNum <= maxNum
+          }
+        } else {
+          isCorrect = userStr === correctStr
+        }
       }
       if (isCorrect) { correct++; score += q.marks }
       else { wrong++; if (q.type === 'MCQ') score -= q.penalty }
@@ -296,6 +311,14 @@ export function useExamState() {
     })
   }, [])
 
+  const openStats = useCallback(() => {
+    setState(s => ({ ...s, phase: 'stats' }))
+  }, [])
+
+  const closeStats = useCallback(() => {
+    setState(s => ({ ...s, phase: 'select' }))
+  }, [])
+
   return {
     state,
     selectExam,
@@ -314,5 +337,7 @@ export function useExamState() {
     exitPractice,
     resetExam,
     reviewHistoryAttempt,
+    openStats,
+    closeStats,
   }
 }

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, XCircle, MinusCircle, Copy, Check, Bookmark, BookmarkCheck, Clock } from 'lucide-react'
 import type { Question } from '../types/exam'
 import { getBookmark, saveBookmark, removeBookmark } from '../lib/bookmarks'
+import { natCorrect } from '../lib/natCorrect'
 
 function fmtSeconds(secs: number): string {
   const m = Math.floor(secs / 60)
@@ -52,9 +53,18 @@ function MathContent({ html, className }: { html: string; className?: string }) 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const cleaned = html
-      .replace(/\$\$([\s\S]*?)\$\$/g,  (_, m) => `$$${cleanMathBlock(m)}$$`)
-      .replace(/\\\[([\s\S]*?)\\\]/g,  (_, m) => `\\[${cleanMathBlock(m)}\\]`)
+    // Split on existing $$...$$ blocks so the \begin fixups never fire inside them.
+    const ddParts = html.split(/((?<!\$)\$\$[\s\S]*?\$\$(?!\$))/)
+    const fixed = ddParts.map((part, i) => {
+      if (i % 2 === 1) {
+        return part.replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+      }
+      return part
+        .replace(/(?<!\$)(\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\})\s*\${1,3}/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+        .replace(/\$\s*(\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\})\s*\$/g, (_, m) => `$$${cleanMathBlock(m)}$$`)
+    }).join('')
+    const cleaned = fixed
+      .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => `\\[${cleanMathBlock(m)}\\]`)
     el.innerHTML = cleaned
     renderMathInElement(el, KATEX_OPTIONS)
   }, [html])
@@ -105,9 +115,6 @@ function OutcomeTag({ outcome }: { outcome: OptionOutcome }) {
   return null
 }
 
-function natCorrect(userAnswer: string | string[] | undefined, correctAnswer: string | string[]): boolean {
-  return String(userAnswer ?? '').trim() === String(correctAnswer).trim()
-}
 
 export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer, examName, timeSpentSeconds }: Props) {
   const { correctAnswer } = question
@@ -153,8 +160,11 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
   }
 
   // Compute overall outcome for the score indicator
+  const noCorrectAnswer = !correctAnswer || correctAnswer === '' || (Array.isArray(correctAnswer) && correctAnswer.length === 0)
   let outcome: 'correct' | 'wrong' | 'skipped'
   if (!userAnswer || (Array.isArray(userAnswer) && userAnswer.length === 0) || userAnswer === '') {
+    outcome = 'skipped'
+  } else if (noCorrectAnswer) {
     outcome = 'skipped'
   } else if (question.type === 'MCQ') {
     outcome = userAnswer === correctAnswer ? 'correct' : 'wrong'
