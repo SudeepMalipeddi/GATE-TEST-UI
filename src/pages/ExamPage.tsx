@@ -91,7 +91,7 @@ export function ExamPage({ state, onAnswer, onClear, onMarkReview, onSaveNext, o
       !(Array.isArray(localAnswer) && localAnswer.length === 0)
     if (valid) onAnswer(question.id, localAnswer!)
     onMarkReview(question.id)
-    if (hasNext) onSaveNext(question.id, valid ? localAnswer : undefined)
+    onSaveNext(question.id, valid ? localAnswer : undefined)
   }
 
   const sidebar = (
