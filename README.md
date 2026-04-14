@@ -8,20 +8,22 @@ A full-featured exam practice interface for GATE CS and ISRO preparation. Suppor
 
 1. [Tech Stack](#tech-stack)
 2. [Prerequisites](#prerequisites)
-3. [Installation](#installation)
-4. [Running the Development Server](#running-the-development-server)
-5. [Building for Production](#building-for-production)
-6. [Features](#features)
+3. [Windows Setup](#windows-setup)
+4. [Installation](#installation)
+5. [Running the Development Server](#running-the-development-server)
+6. [Building for Production](#building-for-production)
+7. [Features](#features)
    - [Exam Mode](#exam-mode)
    - [Practice Mode](#practice-mode)
    - [Results and Review](#results-and-review)
    - [AI Explanations (Ask AI)](#ai-explanations-ask-ai)
-7. [AI Provider Setup](#ai-provider-setup)
+8. [AI Provider Setup](#ai-provider-setup)
    - [Gemini (cloud, free)](#gemini-cloud-free)
    - [Ollama (local, fully offline)](#ollama-local-fully-offline)
-8. [Project Structure](#project-structure)
-9. [Exam Data Format](#exam-data-format)
-10. [Troubleshooting](#troubleshooting)
+9. [Project Structure](#project-structure)
+10. [Adding Custom Exams](#adding-custom-exams)
+11. [Exam Data Format](#exam-data-format)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -67,6 +69,183 @@ If you prefer Node.js, version 18 or higher is required.
 
 ```bash
 node --version   # should be v18.0.0 or higher
+```
+
+---
+
+## Windows Setup
+
+The project runs on Windows natively (PowerShell or Git Bash) and also inside WSL2. Pick whichever you're comfortable with.
+
+---
+
+### Option A — Native Windows (PowerShell)
+
+**1. Install Bun**
+
+Open PowerShell and run:
+
+```powershell
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+Close and reopen PowerShell after installation, then verify:
+
+```powershell
+bun --version
+```
+
+Alternatively, install via winget or Scoop:
+
+```powershell
+winget install Oven-sh.Bun
+# or
+scoop install bun
+```
+
+**2. Install Node.js (if you prefer npm)**
+
+Download the LTS installer from [https://nodejs.org](https://nodejs.org) and run it, or use winget:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+```
+
+**3. Install Git**
+
+If you don't have Git:
+
+```powershell
+winget install Git.Git
+```
+
+After installing Git, open **Git Bash** (comes with the Git for Windows installer) for a Unix-like terminal experience. All commands in this README work in Git Bash without modification.
+
+**4. Clone and install**
+
+In PowerShell or Git Bash:
+
+```powershell
+git clone <repository-url>
+cd gate-practice-ui
+bun install
+```
+
+**5. Run the dev server**
+
+```powershell
+bun run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+**6. Ollama CORS (PowerShell)**
+
+If you use the Ollama AI provider, the environment variable syntax differs from Linux/macOS.
+
+PowerShell:
+
+```powershell
+$env:OLLAMA_ORIGINS = "http://localhost:5173"
+ollama serve
+```
+
+Command Prompt:
+
+```cmd
+set OLLAMA_ORIGINS=http://localhost:5173
+ollama serve
+```
+
+To make the setting permanent across terminals, add it via System Properties → Environment Variables, or use:
+
+```powershell
+[System.Environment]::SetEnvironmentVariable("OLLAMA_ORIGINS", "http://localhost:5173", "User")
+```
+
+**7. Install Ollama on Windows**
+
+Download the `.exe` installer from [https://ollama.com/download](https://ollama.com/download) and run it. After installation, `ollama` will be available in PowerShell and Command Prompt.
+
+Pull a model:
+
+```powershell
+ollama pull gemma3:4b
+```
+
+---
+
+### Option B — WSL2 (Windows Subsystem for Linux)
+
+WSL2 gives you a full Linux environment on Windows. This is the recommended approach if you are comfortable with the terminal, as all Linux commands in this README work without modification.
+
+**1. Install WSL2**
+
+Open PowerShell as Administrator:
+
+```powershell
+wsl --install
+```
+
+This installs WSL2 with Ubuntu by default. Restart your machine when prompted.
+
+**2. Open a WSL2 terminal**
+
+Launch **Ubuntu** from the Start menu (or run `wsl` in PowerShell). You are now in a Linux shell — follow the standard Linux instructions in the [Prerequisites](#prerequisites) and [Installation](#installation) sections from here.
+
+**3. Access project files**
+
+Store the repository inside the WSL2 filesystem (e.g. `~/gate-practice-ui`) rather than under `/mnt/c/` for significantly better performance. The Windows file explorer can access WSL2 files via `\\wsl$\Ubuntu\home\<username>\`.
+
+**4. Ollama in WSL2**
+
+Ollama can run either natively in Windows (recommended) or inside WSL2. If running in Windows, reach it from WSL2 by replacing `localhost` with the Windows host IP. The easiest way is to run Ollama in Windows and point the app to `http://localhost:11434` — WSL2 forwards Windows localhost ports automatically on recent Windows 11 builds.
+
+If you installed Ollama inside WSL2:
+
+```bash
+OLLAMA_ORIGINS=http://localhost:5173 ollama serve
+```
+
+---
+
+### Windows Troubleshooting
+
+**`bun` not found after install**
+
+Bun adds itself to `%APPDATA%\Local\bun` and updates your PATH. If PowerShell still doesn't find it, close all PowerShell windows and reopen, or add the path manually:
+
+```powershell
+$env:PATH += ";$env:APPDATA\Local\bun"
+```
+
+**Port 5173 blocked by firewall**
+
+Windows Defender Firewall may block Vite's dev server on first run. Click **Allow** when prompted, or add a firewall rule manually for TCP port 5173.
+
+**Long path errors on `bun install`**
+
+Windows has a 260-character path limit by default. Enable long paths:
+
+```powershell
+# Run as Administrator
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
+```
+
+**Line ending issues (CRLF)**
+
+If you clone on Windows with Git's default settings, files may get CRLF line endings which can cause issues with some scripts. Set Git to preserve LF endings for this repo:
+
+```powershell
+git config core.autocrlf false
+git rm --cached -r .
+git reset --hard
+```
+
+Or set it globally before cloning:
+
+```powershell
+git config --global core.autocrlf input
 ```
 
 ---
