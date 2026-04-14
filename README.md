@@ -739,7 +739,7 @@ Name the file with a URL-safe slug, e.g. `public/exams/my-algorithms-test.json`:
 }
 ```
 
-> A ready-to-use sample with 12 questions covering all three types is available at `/home/sudeep/sample_exam.json` if you're running this locally.
+> A ready-to-use sample covering all three question types is included in this repository root as `sample_exam.json`. You can also upload it directly via the **Upload exam** button to test the interface without modifying the catalog.
 
 **Step 2 — Add an entry to `catalog.json`**
 
