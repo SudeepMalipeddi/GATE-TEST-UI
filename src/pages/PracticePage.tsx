@@ -7,9 +7,11 @@ import { QuestionPalette } from '../components/QuestionPalette'
 import { QuestionDisplay } from '../components/QuestionDisplay'
 import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
+import { FixAnswerPanel } from '../components/FixAnswerPanel'
 import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2 } from 'lucide-react'
 import type { ExamState, Question, QuestionStatus } from '../types/exam'
 import { natCorrect } from '../lib/natCorrect'
+import { effectiveAnswer } from '../lib/answerOverrides'
 
 interface Props {
   state: ExamState
@@ -18,13 +20,14 @@ interface Props {
 
 function isCorrect(q: Question, answer: string | string[] | undefined): boolean {
   if (!answer || answer === '' || (Array.isArray(answer) && answer.length === 0)) return false
-  if (q.type === 'MCQ') return answer === q.correctAnswer
+  const correct = effectiveAnswer(q.id, q.correctAnswer)
+  if (q.type === 'MCQ') return answer === correct
   if (q.type === 'MSQ') {
     const u = Array.isArray(answer) ? [...answer].sort() : []
-    const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
+    const c = Array.isArray(correct) ? [...correct].sort() : []
     return JSON.stringify(u) === JSON.stringify(c)
   }
-  return natCorrect(answer, q.correctAnswer)
+  return natCorrect(answer, correct)
 }
 
 export function PracticePage({ state, onExit }: Props) {
@@ -257,6 +260,9 @@ export function PracticePage({ state, onExit }: Props) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Fix answer — always accessible, outside the question card */}
+          {!isChecked && <FixAnswerPanel question={question} />}
         </div>
 
         {/* RIGHT sidebar (desktop) */}

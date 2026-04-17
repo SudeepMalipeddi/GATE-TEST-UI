@@ -91,7 +91,7 @@ export default function App() {
   }
 
   if (state.phase === 'instructions' && state.exam) {
-    return <InstructionsPage exam={state.exam} onStart={startExam} onPractice={enterPractice} onBack={resetExam} />
+    return <InstructionsPage exam={state.exam} onStart={startExam} onPractice={() => enterPractice()} onBack={resetExam} />
   }
 
   if (state.phase === 'exam' && state.exam) {

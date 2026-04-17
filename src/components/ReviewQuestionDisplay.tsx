@@ -5,6 +5,8 @@ import { CheckCircle2, XCircle, MinusCircle, Copy, Check, Bookmark, BookmarkChec
 import type { Question } from '../types/exam'
 import { getBookmark, saveBookmark, removeBookmark } from '../lib/bookmarks'
 import { natCorrect } from '../lib/natCorrect'
+import { effectiveAnswer } from '../lib/answerOverrides'
+import { FixAnswerPanel } from './FixAnswerPanel'
 
 function fmtSeconds(secs: number): string {
   const m = Math.floor(secs / 60)
@@ -117,13 +119,13 @@ function OutcomeTag({ outcome }: { outcome: OptionOutcome }) {
 
 
 export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer, examName, timeSpentSeconds }: Props) {
-  const { correctAnswer } = question
   const [copied, setCopied] = useState(false)
   const [bookmarked, setBookmarked] = useState(() => !!getBookmark(question.id))
   const [note, setNote] = useState(() => getBookmark(question.id)?.note ?? '')
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Re-sync when question changes
+  const correctAnswer = effectiveAnswer(question.id, question.correctAnswer)
+
   useEffect(() => {
     const bm = getBookmark(question.id)
     setBookmarked(!!bm)
@@ -264,9 +266,7 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
 
       {/* Review answer area */}
       <div className="border-t border-border pt-4 mt-2">
-        <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
-          Answer Review
-        </p>
+        <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Answer Review</p>
 
         {(question.type === 'MCQ' || question.type === 'MSQ') && (
           <div className="flex flex-wrap gap-2">
@@ -307,6 +307,8 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
             </div>
           </div>
         )}
+
+        <FixAnswerPanel question={question} />
       </div>
     </div>
   )
