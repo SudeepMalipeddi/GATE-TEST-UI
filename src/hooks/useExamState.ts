@@ -260,15 +260,19 @@ export function useExamState() {
     localStorage.removeItem(STORAGE_KEY)
   }, [])
 
-  const enterPractice = useCallback(() => {
-    setState(s => ({
-      ...s,
-      phase: 'practice',
-      currentSection: 0,
-      currentQuestion: 0,
-      answers: {},
-      statuses: s.exam ? initStatuses(s.exam) : {},
-    }))
+  const enterPractice = useCallback((examOverride?: ExamData) => {
+    setState(s => {
+      const exam = examOverride ?? s.exam
+      return {
+        ...s,
+        exam,
+        phase: 'practice',
+        currentSection: 0,
+        currentQuestion: 0,
+        answers: {},
+        statuses: exam ? initStatuses(exam) : {},
+      }
+    })
   }, [])
 
   const openBookmark = useCallback((exam: ExamData, sectionIdx: number, questionIdx: number) => {
@@ -323,6 +327,14 @@ export function useExamState() {
     setState(s => ({ ...s, phase: 'select' }))
   }, [])
 
+  const openNptel = useCallback(() => {
+    setState(s => ({ ...s, phase: 'nptel' }))
+  }, [])
+
+  const closeNptel = useCallback(() => {
+    setState(s => ({ ...s, phase: 'select' }))
+  }, [])
+
   return {
     state,
     selectExam,
@@ -343,5 +355,7 @@ export function useExamState() {
     reviewHistoryAttempt,
     openStats,
     closeStats,
+    openNptel,
+    closeNptel,
   }
 }

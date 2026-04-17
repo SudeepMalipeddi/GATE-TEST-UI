@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { BookOpen, Search, Loader2, ChevronDown, ChevronRight, CheckCircle2, XCircle, MinusCircle, Trash2, RotateCcw, ClipboardList, Bookmark, X, Upload, FileJson, AlertCircle, BarChart2 } from 'lucide-react'
+import { BookOpen, Search, Loader2, ChevronDown, ChevronRight, CheckCircle2, XCircle, MinusCircle, Trash2, RotateCcw, ClipboardList, Bookmark, X, Upload, FileJson, AlertCircle, BarChart2, GraduationCap } from 'lucide-react'
 import { loadCatalog, loadExam } from '../data/examCatalog'
 import type { ExamMeta } from '../data/examCatalog'
 import type { ExamData, AttemptRecord } from '../types/exam'
@@ -122,6 +122,7 @@ interface Props {
   onReviewAttempt: (exam: ExamData, answers: Record<string, string | string[]>, timeSpent?: Record<string, number>) => void
   onOpenBookmark: (exam: ExamData, sectionIdx: number, questionIdx: number) => void
   onOpenStats: () => void
+  onOpenNptel: () => void
 }
 
 const YEAR_TABS = ['2026', '2025', '2024', '2023', '2022', '2021', '2020', 'DA', 'Other'] as const
@@ -191,7 +192,7 @@ function getSubject(name: string): string {
   return normalizeSubject(second)
 }
 
-export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOpenStats }: Props) {
+export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOpenStats, onOpenNptel }: Props) {
   const [catalog, setCatalog] = useState<ExamMeta[]>([])
   const [history, setHistory] = useState<AttemptRecord[]>(loadHistory)
   const [bookmarks, setBookmarks] = useState<BookmarkType[]>(() => getBookmarks())
@@ -504,6 +505,15 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
         </div>
         <span className="font-semibold text-sm">Assessment Examination Center</span>
         <div className="ml-auto flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 text-xs"
+            onClick={onOpenNptel}
+          >
+            <GraduationCap className="w-3.5 h-3.5" />
+            NPTEL
+          </Button>
           <Button
             variant="outline"
             size="sm"

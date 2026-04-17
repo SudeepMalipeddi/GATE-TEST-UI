@@ -1,0 +1,74 @@
+[
+  {
+    "id": "noc26_cs23",
+    "subject": "Computer Architecture",
+    "weekCount": 12,
+    "lectureCount": 33,
+    "questionCount": 1628,
+    "flashcardCount": 990
+  },
+  {
+    "id": "noc26_cs35",
+    "subject": "Computer Networks",
+    "weekCount": 12,
+    "lectureCount": 60,
+    "questionCount": 2941,
+    "flashcardCount": 1800
+  },
+  {
+    "id": "noc26_cs39",
+    "subject": "Databases",
+    "weekCount": 8,
+    "lectureCount": 40,
+    "questionCount": 1935,
+    "flashcardCount": 1170
+  },
+  {
+    "id": "noc26_cs52",
+    "subject": "C++ Programming",
+    "weekCount": 13,
+    "lectureCount": 75,
+    "questionCount": 3475,
+    "flashcardCount": 2250
+  },
+  {
+    "id": "noc26_cs53",
+    "subject": "C Programming",
+    "weekCount": 12,
+    "lectureCount": 61,
+    "questionCount": 2838,
+    "flashcardCount": 1830
+  },
+  {
+    "id": "noc26_cs56",
+    "subject": "Compiler Design",
+    "weekCount": 12,
+    "lectureCount": 61,
+    "questionCount": 2880,
+    "flashcardCount": 1800
+  },
+  {
+    "id": "noc26_cs60",
+    "subject": "Computer Networks",
+    "weekCount": 12,
+    "lectureCount": 67,
+    "questionCount": 3278,
+    "flashcardCount": 2010
+  },
+  {
+    "id": "noc26_cs67",
+    "subject": "Algorithms",
+    "weekCount": 8,
+    "lectureCount": 56,
+    "questionCount": 2689,
+    "flashcardCount": 1680
+  },
+  {
+    "id": "noc26_cs69",
+    "subject": "Algorithms",
+    "weekCount": 10,
+    "lectureCount": 54,
+    "questionCount": 2536,
+    "flashcardCount": 1620
+  }
+]
