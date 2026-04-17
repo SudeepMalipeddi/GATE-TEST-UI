@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# NPTEL scraped data
+scripts/nptel_data/
+scripts/__pycache__/
+scripts/claude_context.txt

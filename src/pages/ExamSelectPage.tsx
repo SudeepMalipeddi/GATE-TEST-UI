@@ -185,11 +185,8 @@ function getSubject(name: string): string {
   // "X | MOCK GATE …" → "Mock GATE"
   if (/^MOCK GATE/i.test(second)) return 'Mock GATE'
 
-  // "X | Weekly Quiz N | Topic" → use the topic (parts[2])
-  if (/^Weekly Quiz/i.test(second) && parts[2]) {
-    // Topic might be "Propositional Logic" or "Relational Model | DBMS" — take the first segment
-    return normalizeSubject(parts[2].split('|')[0])
-  }
+  // "X | Weekly Quiz N | Topic" → group all together
+  if (/^Weekly Quiz/i.test(second)) return 'Weekly Quizzes'
 
   return normalizeSubject(second)
 }
@@ -337,6 +334,8 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
     if (bm) saveBookmark({ ...bm, note })
     refreshBookmarks()
   }
+
+  const attemptedNames = new Set(history.map(h => h.examName))
 
   const tabExams = catalog
     .filter(e => getYearTab(e.name) === activeTab)
@@ -776,19 +775,24 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
 
                           {isOpen && (
                             <div className="flex flex-col divide-y divide-border">
-                              {exams.map(exam => (
-                                <button
-                                  key={exam.id}
-                                  onClick={() => handleSelect(exam)}
-                                  disabled={loadingId === exam.id}
-                                  className="text-left px-4 py-2.5 hover:bg-accent transition-colors text-sm flex items-center justify-between gap-2 disabled:opacity-60"
-                                >
-                                  <span>{exam.name}</span>
-                                  {loadingId === exam.id && (
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground flex-shrink-0" />
-                                  )}
-                                </button>
-                              ))}
+                              {exams.map(exam => {
+                                const attempted = attemptedNames.has(exam.name)
+                                return (
+                                  <button
+                                    key={exam.id}
+                                    onClick={() => handleSelect(exam)}
+                                    disabled={loadingId === exam.id}
+                                    className={`text-left px-4 py-2.5 hover:bg-accent transition-colors text-sm flex items-center justify-between gap-2 disabled:opacity-60 ${
+                                      attempted ? 'text-[#22C55E]' : ''
+                                    }`}
+                                  >
+                                    <span>{exam.name}</span>
+                                    {loadingId === exam.id && (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground flex-shrink-0" />
+                                    )}
+                                  </button>
+                                )
+                              })}
                             </div>
                           )}
                         </div>

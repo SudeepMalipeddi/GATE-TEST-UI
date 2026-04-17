@@ -382,6 +382,15 @@ After submitting an exam you see a results summary and can review every question
 - NAT questions show your numerical answer alongside the correct answer
 - Ask AI panel available for every question
 
+### Performance Stats
+
+A per-topic analytics page accessible from the **Stats** button on the exam select screen.
+
+- Aggregates all attempt history by GATE CS subject (Algorithms, OS, Networks, etc.) using a keyword-based topic classifier
+- Shows: attempts, accuracy %, score %, correct / wrong / skipped counts
+- Sortable by any column
+- Accuracy bar visualisation per topic
+
 ### AI Explanations (Ask AI)
 
 An inline chat panel that explains why the correct answer is correct. Available in both Practice mode and Review mode.
@@ -391,9 +400,11 @@ Supports two AI providers — see [AI Provider Setup](#ai-provider-setup) for co
 **Chat features:**
 
 - Ask follow-up questions — the full conversation history is sent with each request
-- Responses rendered as rich markdown: bold, lists, code blocks, and LaTeX math
+- Responses rendered as rich markdown: bold, lists, code blocks, and LaTeX math (KaTeX)
+- LaTeX math normalisation: handles `\(...\)` → `$...$` conversion and safely escapes `$` used as a grammar end-of-input symbol inside `\text{}` so it never confuses the math parser
 - Collapsible **Reasoning** block for thinking models (e.g., Gemma 4, DeepSeek-R1, gemini-2.5-flash)
-- **Clear** button to reset the conversation for a question
+- **Conversation caching**: each question's AI conversation is saved to `localStorage` automatically — revisiting a question instantly restores the previous exchange without making a new API call
+- **Clear** button wipes both the in-memory state and the cached conversation for that question
 - Per-question isolation — the conversation resets automatically when you navigate to a new question
 - Local daily request counter for Gemini models (resets at midnight Pacific time)
 
@@ -537,13 +548,16 @@ gate-practice-ui/
 │   └── exams/
 │       ├── catalog.json          # Index of all 900+ exams
 │       └── *.json                # Individual exam files
+├── scripts/
+│   ├── export_context.py         # Exports catalog + history as a Claude-readable text file
+│   └── mcp_server.py             # MCP server exposing exam tools to Claude Code / Claude Desktop
 ├── src/
 │   ├── components/
 │   │   ├── ui/                   # shadcn/ui primitives (Button, Input, Dialog, etc.)
 │   │   ├── ActionBar.tsx         # Save / Mark Review / Clear / Prev buttons
-│   │   ├── AskAI.tsx             # Inline AI chat panel (Gemini + Ollama)
+│   │   ├── AskAI.tsx             # Inline AI chat panel (Gemini + Ollama), with localStorage cache
 │   │   ├── Calculator.tsx        # Scientific calculator overlay
-│   │   ├── ExamHeader.tsx        # Fixed top bar: exam name, font size toggle
+│   │   ├── ExamHeader.tsx        # Fixed top bar: exam name, font size toggle, exit button
 │   │   ├── Legend.tsx            # Status colour legend
 │   │   ├── QuestionDisplay.tsx   # Interactive question (exam + practice mode)
 │   │   ├── QuestionPalette.tsx   # Question number grid with status colours
@@ -552,13 +566,18 @@ gate-practice-ui/
 │   │   └── TimerBlock.tsx        # Countdown timer
 │   ├── hooks/
 │   │   └── useExamState.ts       # All exam state and actions (single source of truth)
+│   ├── lib/
+│   │   ├── bookmarks.ts          # Bookmark save/load/remove helpers (localStorage)
+│   │   ├── natCorrect.ts         # NAT answer checker supporting min:max range format
+│   │   └── topicClassifier.ts    # Keyword-based GATE CS topic classifier (17 buckets)
 │   ├── pages/
 │   │   ├── ExamPage.tsx          # Timed exam interface
 │   │   ├── ExamSelectPage.tsx    # Exam catalogue with year/subject grouping + upload
-│   │   ├── InstructionsPage.tsx  # Pre-exam instructions
+│   │   ├── InstructionsPage.tsx  # Pre-exam instructions (with back button)
 │   │   ├── PracticePage.tsx      # Untimed practice with instant feedback
 │   │   ├── ResultsPage.tsx       # Score summary after submission
-│   │   └── ReviewPage.tsx        # Post-exam answer review
+│   │   ├── ReviewPage.tsx        # Post-exam answer review
+│   │   └── StatsPage.tsx         # Per-topic performance analytics table
 │   ├── types/
 │   │   └── exam.ts               # TypeScript interfaces for all data shapes
 │   └── data/
@@ -573,10 +592,12 @@ gate-practice-ui/
 ### Key architectural decisions
 
 - **Single state hook**: all exam state lives in `useExamState`. Pages receive state and callbacks as props — no prop drilling through context.
-- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` (`select` | `instructions` | `exam` | `results` | `review` | `history-review` | `practice`).
+- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` (`select` | `stats` | `instructions` | `exam` | `results` | `review` | `history-review` | `practice`).
 - **Exam persistence**: `useExamState` writes the in-progress exam state to `localStorage` on every change. If the page is refreshed mid-exam, the state is restored automatically.
-- **Practice mode is local-only**: answers and checked state in practice mode live in `PracticePage` component state, not in `useExamState`. Nothing is persisted.
-- **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these synchronously at parse time via `rehype-katex`.
+- **Practice mode is local-only**: answers and checked state in practice mode live in `PracticePage` component state, not in `useExamState`. Nothing is persisted across sessions.
+- **AI chat caching**: each question's conversation is stored under `ai_chat_<questionId>` in `localStorage`. No API call is made on revisit unless the user clears it.
+- **NAT range answers**: `correctAnswer` can be a range string `"min:max"` (e.g. `"3.5:4.5"`). `src/lib/natCorrect.ts` handles both exact and range matching.
+- **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these via `rehype-katex`. AI responses go through `normaliseMath()` first to convert `\(...\)` syntax and protect `$` used as a grammar symbol inside `\text{}`.
 
 ---
 

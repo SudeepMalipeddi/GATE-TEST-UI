@@ -27,6 +27,24 @@ const KEY_GEMINI_MODEL = 'gemini_model'
 const KEY_OLLAMA_MODEL = 'ollama_model'
 const KEY_OLLAMA_URL   = 'ollama_url'
 
+function chatCacheKey(questionId: string) { return `ai_chat_${questionId}` }
+
+function loadCachedMessages(questionId: string): Message[] {
+  try {
+    const raw = localStorage.getItem(chatCacheKey(questionId))
+    if (!raw) return []
+    return JSON.parse(raw) as Message[]
+  } catch { return [] }
+}
+
+function saveCachedMessages(questionId: string, messages: Message[]) {
+  localStorage.setItem(chatCacheKey(questionId), JSON.stringify(messages))
+}
+
+function clearCachedMessages(questionId: string) {
+  localStorage.removeItem(chatCacheKey(questionId))
+}
+
 const DEFAULT_OLLAMA_URL  = 'http://localhost:11434'
 const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash'
 
@@ -125,9 +143,14 @@ Explain clearly why the answer is correct. For follow-up questions, answer them 
 
 Formatting rules:
 - Use markdown for structure (bold, lists, code blocks)
-- Use LaTeX for ALL math and symbols: $x$ for inline, $$x$$ for display
-- For arrows use $\\rightarrow$ (never → or -> or ==>)
-- For other symbols: $\\leq$, $\\geq$, $\\neq$, $\\Rightarrow$, $\\times$, $\\log$, etc.
+- Use LaTeX for ALL math and symbols: $x$ for inline, $$x$$ for display/block
+- NEVER use Unicode math characters — always use LaTeX equivalents:
+  - Arrows: $\\rightarrow$, $\\Rightarrow$, $\\leftarrow$ (never →, =>, ⟹)
+  - Dot marker: $\\cdot$ (never ·, •, ⋅)
+  - Subscripts: $I_0$, $I_1$ (never I₀, I₁ or "I 0")
+  - Comparison: $\\leq$, $\\geq$, $\\neq$ (never ≤, ≥, ≠)
+  - Other: $\\times$, $\\log$, $\\in$, $\\cup$, $\\cap$, $\\emptyset$
+- For the end-of-input grammar symbol "$", ALWAYS write it as $\\char36$ inside math (e.g., $S' \\rightarrow S\\ \\char36$). NEVER use a bare $ or \\$ for the grammar symbol.
 - Never mix Unicode math symbols with LaTeX in the same response`
 }
 
@@ -234,12 +257,35 @@ function ThinkingBlock({ thinking }: { thinking: string }) {
   )
 }
 
+// ── Pre-process AI response to fix $ used as grammar symbol ──────────
+// Gemini uses $...$ for inline math AND $ as the end-of-input marker in
+// parser/grammar explanations (inside \text{$}).  remark-math sees the
+// inner $ as a closing delimiter, breaking the math block.
+//
+// Fix: escape every $ inside \text{...} with \$ so remark-math treats it
+// as a literal dollar sign rather than a math delimiter.
+function normaliseMath(raw: string): string {
+  // 1. Convert \(...\) → $...$ and \[...\] → $$...$$ — remark-math only
+  //    recognises dollar delimiters; backslash-paren gets markdown-escaped.
+  let s = raw
+    .replace(/\\\((.+?)\\\)/gs, (_, m) => `$${m}$`)
+    .replace(/\\\[(.+?)\\\]/gs,  (_, m) => `$$${m}$$`)
+
+  // 2. Replace bare $ inside \text{...} with \char36 so remark-math's
+  //    character-level scanner never sees it as a delimiter.
+  s = s.replace(/\\text\{([^}]*)\}/g, (_, inner) =>
+    `\\text{${inner.replace(/\$/g, '\\char36')}}`
+  )
+
+  return s
+}
+
 // ── Markdown message renderer ──────────────────────────────────────
 function MdMessage({ text }: { text: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex]}
+      rehypePlugins={[[rehypeKatex, { strict: false }]]}
       components={{
         p:    ({ children }) => <p className="text-base mb-1 last:mb-0">{children}</p>,
         ul:   ({ children }) => <ul className="text-base list-disc list-inside space-y-0.5 mb-1">{children}</ul>,
@@ -252,7 +298,7 @@ function MdMessage({ text }: { text: string }) {
         strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
       }}
     >
-      {text}
+      {normaliseMath(text)}
     </ReactMarkdown>
   )
 }
@@ -585,7 +631,10 @@ export function AskAI({ question }: Props) {
   const [usageTick, setUsageTick] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => { setMessages([]); setError(null) }, [question.id])
+  useEffect(() => {
+    setMessages(loadCachedMessages(question.id))
+    setError(null)
+  }, [question.id])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
 
   const providerLabel = () => {
@@ -633,7 +682,11 @@ export function AskAI({ question }: Props) {
         )
       }
 
-      setMessages(prev => [...prev, { role: 'assistant', text: result.text, thinking: result.thinking }])
+      setMessages(prev => {
+        const next = [...prev, { role: 'assistant' as const, text: result.text, thinking: result.thinking }]
+        saveCachedMessages(question.id, next)
+        return next
+      })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
       setMessages(prev => prev.slice(0, -1))
@@ -656,7 +709,7 @@ export function AskAI({ question }: Props) {
         <div className="flex items-center gap-1">
           {messages.length > 0 && (
             <button
-              onClick={() => { setMessages([]); setError(null) }}
+              onClick={() => { clearCachedMessages(question.id); setMessages([]); setError(null) }}
               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors"
             >
               <Trash2 className="w-3 h-3" /> Clear
