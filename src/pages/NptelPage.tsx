@@ -68,7 +68,7 @@ async function buildPracticeAllExam(
       weekName: week.humanWeek,
       lecName: lec.name,
     })),
-  } as ExamData & { _nptelManifest: unknown }
+  }
 }
 
 // ── Subject colour map ─────────────────────────────────────────────

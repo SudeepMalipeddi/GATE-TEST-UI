@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -9,7 +9,7 @@ import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
 import { FixAnswerPanel } from '../components/FixAnswerPanel'
 import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2 } from 'lucide-react'
-import type { ExamState, Question, QuestionStatus } from '../types/exam'
+import type { ExamState, Question, QuestionStatus, Section } from '../types/exam'
 import { natCorrect } from '../lib/natCorrect'
 import { effectiveAnswer } from '../lib/answerOverrides'
 
@@ -40,6 +40,51 @@ export function PracticePage({ state, onExit }: Props) {
     () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
   )
 
+  // ── NPTEL sliding window ───────────────────────────────────────────
+  const [sections, setSections] = useState<Section[]>(() => exam?.sections ?? [])
+  const loadedCount = useRef(exam?.sections.length ?? 0)
+  const isLoadingRef = useRef(false)
+  const [loadingNext, setLoadingNext] = useState(false)
+  const manifest = exam?._nptelManifest
+
+  useEffect(() => {
+    if (!manifest || !exam) return
+    if (currentSection < sections.length - 1) return   // not at the last loaded section
+    if (loadedCount.current >= manifest.length) return  // all manifest entries consumed
+    if (isLoadingRef.current) return
+
+    isLoadingRef.current = true
+    setLoadingNext(true)
+
+    let nextIdx = loadedCount.current
+    const doLoad = async () => {
+      while (nextIdx < manifest.length) {
+        const entry = manifest[nextIdx]
+        const res = await fetch(`/nptel/${entry.courseId}/${entry.file}`)
+        const data = await res.json()
+        nextIdx++
+        if (data.questions && data.questions.length > 0) {
+          setSections(prev => [
+            ...prev,
+            { name: `${entry.weekName} · ${entry.lecName}`, questions: data.questions },
+          ])
+          loadedCount.current = nextIdx
+          break
+        }
+      }
+      if (nextIdx >= manifest.length) loadedCount.current = nextIdx
+      isLoadingRef.current = false
+      setLoadingNext(false)
+    }
+    doLoad()
+  }, [currentSection, sections.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Compose a displayExam so all sub-components see the live sections list
+  const displayExam = useMemo(
+    () => (exam ? { ...exam, sections } : null),
+    [exam, sections]
+  )
+
   useEffect(() => {
     document.documentElement.setAttribute('data-font-size', fontSize)
     localStorage.setItem('font_size', fontSize)
@@ -47,21 +92,67 @@ export function PracticePage({ state, onExit }: Props) {
 
   const handleFontSize = useCallback((s: FontSize) => setFontSize(s), [])
 
-  if (!exam) return null
+  // ── Keyboard shortcuts ─────────────────────────────────────────────
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
 
-  const section = exam.sections[currentSection]
+      const sec = sections[currentSection]
+      const q = sec?.questions[currentQuestion]
+      if (!q) return
+      const qChecked = checked[q.id] ?? false
+      if (qChecked) return
+
+      const key = e.key.toLowerCase()
+
+      if (q.type === 'MCQ') {
+        const opt = q.options.find(o => o.id.toLowerCase() === key)
+        if (opt) {
+          e.preventDefault()
+          setLocalAnswers(prev => ({ ...prev, [q.id]: opt.id }))
+        }
+      } else if (q.type === 'MSQ') {
+        const opt = q.options.find(o => o.id.toLowerCase() === key)
+        if (opt) {
+          e.preventDefault()
+          setLocalAnswers(prev => {
+            const cur = Array.isArray(prev[q.id]) ? (prev[q.id] as string[]) : []
+            const next = cur.includes(opt.id) ? cur.filter(x => x !== opt.id) : [...cur, opt.id]
+            return { ...prev, [q.id]: next }
+          })
+        }
+      }
+
+      if (e.key === 'Enter') {
+        const ans = localAnswers[q.id]
+        const hasAns = ans !== undefined && ans !== '' && !(Array.isArray(ans) && ans.length === 0)
+        if (hasAns) {
+          e.preventDefault()
+          setChecked(prev => ({ ...prev, [q.id]: true }))
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [currentSection, currentQuestion, sections, checked, localAnswers])
+
+  if (!displayExam) return null
+
+  const section = sections[currentSection]
   const question = section?.questions[currentQuestion]
   if (!question) return null
 
-  const totalQuestions = exam.sections.reduce((a, s) => a + s.questions.length, 0)
+  const totalQuestions = sections.reduce((a, s) => a + s.questions.length, 0)
   const questionNumberInExam =
-    exam.sections.slice(0, currentSection).reduce((a, s) => a + s.questions.length, 0) +
+    sections.slice(0, currentSection).reduce((a, s) => a + s.questions.length, 0) +
     currentQuestion + 1
 
   const hasPrev = currentSection > 0 || currentQuestion > 0
   const hasNext =
-    currentSection < exam.sections.length - 1 ||
-    currentQuestion < section.questions.length - 1
+    currentSection < sections.length - 1 ||
+    currentQuestion < section.questions.length - 1 ||
+    (manifest !== undefined && loadedCount.current < manifest.length)
 
   const localAnswer = localAnswers[question.id]
   const isChecked = checked[question.id] ?? false
@@ -74,7 +165,7 @@ export function PracticePage({ state, onExit }: Props) {
   const goPrev = () => {
     if (currentQuestion > 0) setCurrentQuestion(q => q - 1)
     else if (currentSection > 0) {
-      const prevSec = exam.sections[currentSection - 1]
+      const prevSec = sections[currentSection - 1]
       setCurrentSection(s => s - 1)
       setCurrentQuestion(prevSec.questions.length - 1)
     }
@@ -82,10 +173,12 @@ export function PracticePage({ state, onExit }: Props) {
 
   const goNext = () => {
     if (currentQuestion < section.questions.length - 1) setCurrentQuestion(q => q + 1)
-    else if (currentSection < exam.sections.length - 1) {
+    else if (currentSection < sections.length - 1) {
       setCurrentSection(s => s + 1)
       setCurrentQuestion(0)
     }
+    // If we're at the very last loaded question and more are incoming, stay put — the
+    // effect will append a new section and hasNext will become true on re-render.
   }
 
   const handleCheck = () => {
@@ -99,13 +192,13 @@ export function PracticePage({ state, onExit }: Props) {
 
   // Stats
   const checkedCount = Object.values(checked).filter(Boolean).length
-  const correctCount = exam.sections.flatMap(s => s.questions).filter(q =>
+  const correctCount = sections.flatMap(s => s.questions).filter(q =>
     checked[q.id] && isCorrect(q, localAnswers[q.id])
   ).length
 
   // Build palette statuses
   const practiceStatuses: Record<string, QuestionStatus> = {}
-  for (const sec of exam.sections) {
+  for (const sec of sections) {
     for (const q of sec.questions) {
       const ans = localAnswers[q.id]
       const hasAns = ans !== undefined && ans !== '' && !(Array.isArray(ans) && ans.length === 0)
@@ -134,10 +227,18 @@ export function PracticePage({ state, onExit }: Props) {
             <p className="text-[10px] text-muted-foreground mt-0.5">Correct</p>
           </div>
         </div>
+        {loadingNext && (
+          <p className="text-[10px] text-muted-foreground mt-2 text-center animate-pulse">Loading next lecture…</p>
+        )}
+        {manifest && (
+          <p className="text-[10px] text-muted-foreground mt-1 text-center">
+            {loadedCount.current} / {manifest.length} lectures loaded
+          </p>
+        )}
       </div>
 
       <QuestionPalette
-        exam={exam}
+        exam={displayExam}
         currentSection={currentSection}
         currentQuestion={currentQuestion}
         statuses={practiceStatuses}
@@ -173,14 +274,14 @@ export function PracticePage({ state, onExit }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
-      <ExamHeader exam={exam} fontSize={fontSize} onFontSizeChange={handleFontSize} />
+      <ExamHeader exam={displayExam} fontSize={fontSize} onFontSizeChange={handleFontSize} />
 
       <div className="mt-[60px] flex h-[calc(100vh-60px)]">
         {/* LEFT */}
         <div className="flex-1 overflow-auto p-4 md:mr-[260px]">
           {/* Section tabs */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            {exam.sections.map((sec, i) => (
+            {sections.map((sec, i) => (
               <button
                 key={sec.name}
                 onClick={() => goTo(i, 0)}
@@ -217,7 +318,7 @@ export function PracticePage({ state, onExit }: Props) {
                     questionNumber={questionNumberInExam}
                     totalQuestions={totalQuestions}
                     userAnswer={localAnswer}
-                    examName={exam.name}
+                    examName={displayExam.name}
                   />
                   <AskAI question={question} />
                 </>
@@ -254,8 +355,8 @@ export function PracticePage({ state, onExit }: Props) {
                   )}
                 </div>
 
-                <Button variant="outline" size="sm" onClick={goNext} disabled={!hasNext} className="gap-1.5">
-                  Next <ChevronRight className="w-4 h-4" />
+                <Button variant="outline" size="sm" onClick={goNext} disabled={!hasNext || loadingNext} className="gap-1.5">
+                  {loadingNext ? 'Loading…' : <><span>Next</span> <ChevronRight className="w-4 h-4" /></>}
                 </Button>
               </div>
             </CardContent>

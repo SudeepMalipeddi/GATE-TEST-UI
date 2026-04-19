@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { NptelFlashcard } from '../types/exam'
 
 interface Props {
@@ -45,6 +45,28 @@ export function FlashcardDeck({ cards, onDone }: Props) {
     setKnown(new Set(known))
     advance()
   }
+
+  useEffect(() => {
+    if (done) return
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault()
+        if (!revealed) setRevealed(true)
+        else markKnown()
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        if (revealed) markKnown()
+        else advance()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        if (index > 0) { setRevealed(false); setIndex(i => i - 1) }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [done, revealed, index]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const restart = () => {
     setIndex(0)

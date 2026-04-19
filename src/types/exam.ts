@@ -27,10 +27,18 @@ export interface Section {
   questions: Question[]
 }
 
+export interface NptelManifestEntry {
+  courseId: string
+  file: string
+  weekName: string
+  lecName: string
+}
+
 export interface ExamData {
   name: string
   durationMinutes: number
   sections: Section[]
+  _nptelManifest?: NptelManifestEntry[]
 }
 
 export interface ExamState {
