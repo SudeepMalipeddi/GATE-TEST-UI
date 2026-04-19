@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -52,6 +52,21 @@ export function ReviewPage({ state, onBack, backLabel = 'Results' }: Props) {
   }, [fontSize])
 
   const handleFontSize = useCallback((s: FontSize) => setFontSize(s), [])
+
+  // Refs so the keydown handler always calls the latest goPrev/goNext
+  const goPrevRef = useRef<() => void>(() => {})
+  const goNextRef = useRef<() => void>(() => {})
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (e.key === 'ArrowRight') { e.preventDefault(); goNextRef.current() }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrevRef.current() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   if (!exam) return null
 
@@ -147,6 +162,10 @@ export function ReviewPage({ state, onBack, backLabel = 'Results' }: Props) {
       }
     }
   }
+
+  // Keep refs fresh every render
+  goPrevRef.current = goPrev
+  goNextRef.current = goNext
 
   // Build review-mode statuses for the palette
   const reviewStatuses: Record<string, QuestionStatus> = {}

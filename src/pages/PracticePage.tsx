@@ -92,6 +92,16 @@ export function PracticePage({ state, onExit }: Props) {
 
   const handleFontSize = useCallback((s: FontSize) => setFontSize(s), [])
 
+  // ── NAT auto-focus ────────────────────────────────────────────────
+  useEffect(() => {
+    if (!displayExam) return
+    const q = sections[currentSection]?.questions[currentQuestion]
+    if (q?.type === 'NAT' && !(checked[q.id] ?? false)) {
+      const input = document.querySelector('#nat-input') as HTMLInputElement | null
+      input?.focus()
+    }
+  }, [currentSection, currentQuestion]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Keyboard shortcuts ─────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

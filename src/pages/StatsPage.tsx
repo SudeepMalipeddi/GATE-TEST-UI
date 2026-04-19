@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, TrendingUp, Target, BookOpen, BarChart2, ArrowUpDown } from 'lucide-react'
+import { ChevronLeft, TrendingUp, Target, BookOpen, BarChart2, ArrowUpDown, Clock } from 'lucide-react'
 import type { AttemptRecord } from '../types/exam'
 import { classifyExamTopic, TOPICS, type Topic } from '../lib/topicClassifier'
 
@@ -183,6 +183,9 @@ export function StatsPage({ onClose }: Props) {
             />
           </div>
 
+          {/* Recent attempts */}
+          <RecentAttempts history={history} />
+
           {/* Per-topic breakdown */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -253,6 +256,56 @@ function SortHeader({ label, sortKey, current, asc, onSort, className }: {
         ? <span className="ml-0.5">{asc ? '↑' : '↓'}</span>
         : <ArrowUpDown className="w-3 h-3 ml-0.5 opacity-40" />}
     </button>
+  )
+}
+
+function RecentAttempts({ history }: { history: AttemptRecord[] }) {
+  const [expanded, setExpanded] = useState(false)
+  const sorted = [...history].sort((a, b) => b.date.localeCompare(a.date))
+  const visible = expanded ? sorted : sorted.slice(0, 8)
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+          Recent Attempts
+        </h2>
+        {sorted.length > 8 && (
+          <button
+            onClick={() => setExpanded(p => !p)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {expanded ? 'Show less' : `Show all ${sorted.length}`}
+          </button>
+        )}
+      </div>
+      <div className="rounded-lg border border-border overflow-hidden">
+        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 bg-muted/50 border-b border-border text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span>Exam</span>
+          <span className="text-right">Score</span>
+          <span className="text-right">Accuracy</span>
+          <span className="text-right">Date</span>
+        </div>
+        {visible.map((a, i) => {
+          const scorePct = a.maxScore > 0 ? Math.round((Math.max(0, a.score) / a.maxScore) * 100) : 0
+          const acc = a.correct + a.wrong > 0 ? Math.round((a.correct / (a.correct + a.wrong)) * 100) : 0
+          const date = new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+          return (
+            <div key={i} className={`grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2.5 items-center border-b border-border last:border-0 ${i % 2 === 1 ? 'bg-muted/20' : ''}`}>
+              <span className="text-xs text-foreground truncate min-w-0" title={a.examName}>{a.examName}</span>
+              <span className={`text-xs font-semibold tabular-nums text-right ${scorePct >= 75 ? 'text-[#22C55E]' : scorePct >= 50 ? 'text-amber-400' : 'text-[#EF4444]'}`}>
+                {scorePct}%
+              </span>
+              <span className={`text-xs font-semibold tabular-nums text-right ${acc >= 75 ? 'text-[#22C55E]' : acc >= 50 ? 'text-amber-400' : 'text-[#EF4444]'}`}>
+                {acc}%
+              </span>
+              <span className="text-xs text-muted-foreground tabular-nums text-right whitespace-nowrap">{date}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
