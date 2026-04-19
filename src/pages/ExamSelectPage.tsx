@@ -1,7 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Input } from '@/components/ui/input'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { BookOpen, Search, Loader2, ChevronDown, ChevronRight, CheckCircle2, XCircle, MinusCircle, Trash2, RotateCcw, ClipboardList, Bookmark, X, Upload, FileJson, AlertCircle, BarChart2, GraduationCap } from 'lucide-react'
 import { loadCatalog, loadExam } from '../data/examCatalog'
@@ -196,7 +194,11 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
   const [catalog, setCatalog] = useState<ExamMeta[]>([])
   const [history, setHistory] = useState<AttemptRecord[]>(loadHistory)
   const [bookmarks, setBookmarks] = useState<BookmarkType[]>(() => getBookmarks())
-  const [activeTab, setActiveTab] = useState<ActiveTab>(() => loadHistory().length > 0 ? 'Recent' : 'Other')
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    const saved = localStorage.getItem('exam_select_tab') as ActiveTab | null
+    if (saved) return saved
+    return loadHistory().length > 0 ? 'Recent' : 'Other'
+  })
   const [filter, setFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [loadingId, setLoadingId] = useState<string | null>(null)
@@ -211,6 +213,8 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollPositions = useRef<Partial<Record<string, number>>>({})
 
   const processFile = (file: File) => {
     if (!file.name.endsWith('.json')) {
@@ -255,12 +259,19 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
   }
 
   useEffect(() => {
+    localStorage.setItem('exam_select_tab', activeTab)
+  }, [activeTab])
+
+  useEffect(() => {
     loadCatalog().then(c => {
       setCatalog(c)
       setLoading(false)
       // Only auto-select a year tab if not already on Recent
       setActiveTab(prev => {
-        if (prev === 'Recent') return prev
+        // Keep any tab that still has data after the catalog loads
+        if (prev === 'Recent' || prev === 'Bookmarks') return prev
+        if (YEAR_TABS.includes(prev as YearTab) && c.some(e => getYearTab(e.name) === prev)) return prev
+        // Saved tab no longer valid — fall back to first available year tab
         for (const tab of YEAR_TABS) {
           if (c.some(e => getYearTab(e.name) === tab)) return tab
         }
@@ -271,11 +282,20 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
 
   // Reset collapsed state when switching tabs
   const switchTab = (tab: ActiveTab) => {
+    if (scrollRef.current) scrollPositions.current[activeTab] = scrollRef.current.scrollTop
     if (tab === 'Bookmarks') refreshBookmarks()
     setActiveTab(tab)
     setFilter('')
     setCollapsed(new Set())
   }
+
+  // Restore scroll position after tab change
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollPositions.current[activeTab] ?? 0
+    }, 0)
+    return () => clearTimeout(t)
+  }, [activeTab])
 
   const clearHistory = () => {
     localStorage.removeItem(HISTORY_KEY)
@@ -337,6 +357,22 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
   }
 
   const attemptedNames = new Set(history.map(h => h.examName))
+
+  // Global search: activates when filter has 2+ chars, searches all tabs
+  const globalGroups = useMemo(() => {
+    const q = filter.trim()
+    if (q.length < 2) return null
+    const lower = q.toLowerCase()
+    const matched = catalog.filter(e => e.name.toLowerCase().includes(lower))
+    const byYear = new Map<YearTab, ExamMeta[]>()
+    for (const exam of matched) {
+      const year = getYearTab(exam.name)
+      const arr = byYear.get(year) ?? []
+      arr.push(exam)
+      byYear.set(year, arr)
+    }
+    return YEAR_TABS.filter(tab => byYear.has(tab)).map(tab => ({ year: tab, exams: byYear.get(tab)! }))
+  }, [catalog, filter])
 
   const tabExams = catalog
     .filter(e => getYearTab(e.name) === activeTab)
@@ -563,10 +599,63 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
             ))}
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col px-6 py-5 max-w-5xl mx-auto w-full">
+      {/* Persistent search bar */}
+      <div className="border-b border-border px-6 py-2.5 flex items-center gap-3">
+        <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        <input
+          placeholder="Search all exams…"
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        />
+        {filter && (
+          <button onClick={() => setFilter('')} className="text-muted-foreground hover:text-foreground transition-colors">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
 
-        {activeTab === 'Recent' ? (
+      {/* Body */}
+      <div className="flex-1 flex flex-col px-6 py-5 max-w-5xl mx-auto w-full overflow-hidden">
+
+        {globalGroups !== null ? (
+          /* ── Global search results ── */
+          <div ref={scrollRef} className="flex-1 overflow-y-auto">
+            <div className="flex flex-col gap-3 pb-6">
+              <p className="text-xs text-muted-foreground">
+                {globalGroups.reduce((n: number, g: { year: YearTab; exams: ExamMeta[] }) => n + g.exams.length, 0)} results across {globalGroups.length} year{globalGroups.length !== 1 ? 's' : ''}
+              </p>
+              {globalGroups.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-10">No exams match "{filter}"</p>
+              )}
+              {globalGroups.map(({ year, exams }: { year: YearTab; exams: ExamMeta[] }) => (
+                <div key={year} className="border border-border rounded-md overflow-hidden">
+                  <div className="px-3 py-2 bg-muted flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground uppercase tracking-wide">{year}</span>
+                    <span className="text-xs text-muted-foreground">{exams.length}</span>
+                  </div>
+                  <div className="flex flex-col divide-y divide-border">
+                    {exams.map((exam: ExamMeta) => {
+                      const attempted = attemptedNames.has(exam.name)
+                      return (
+                        <button
+                          key={exam.id}
+                          onClick={() => handleSelect(exam)}
+                          disabled={loadingId === exam.id}
+                          className={`text-left px-4 py-2.5 hover:bg-accent transition-colors text-sm flex items-center justify-between gap-2 disabled:opacity-60 ${attempted ? 'text-[#22C55E]' : ''}`}
+                        >
+                          <span>{exam.name}</span>
+                          {loadingId === exam.id && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground flex-shrink-0" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        ) : activeTab === 'Recent' ? (
           /* ── Recent attempts view ── */
           <>
             <div className="flex items-center justify-between mb-4">
@@ -575,7 +664,7 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
                 <Trash2 className="w-3.5 h-3.5" /> Clear History
               </Button>
             </div>
-            <ScrollArea className="flex-1">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto">
               <div className="flex flex-col gap-3 pb-6">
                 {history.map((attempt, i) => {
                   const pct = attempt.maxScore > 0 ? Math.round((attempt.score / attempt.maxScore) * 100) : 0
@@ -643,7 +732,7 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
                   )
                 })}
               </div>
-            </ScrollArea>
+            </div>
           </>
 
         ) : activeTab === 'Bookmarks' ? (
@@ -652,7 +741,7 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs text-muted-foreground">{bookmarks.length} bookmark{bookmarks.length !== 1 ? 's' : ''}</p>
             </div>
-            <ScrollArea className="flex-1">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto">
               <div className="flex flex-col gap-3 pb-6">
                 {bookmarks.length === 0 && (
                   <p className="text-sm text-muted-foreground text-center py-10">No bookmarks yet. Bookmark questions during review.</p>
@@ -728,21 +817,11 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
                   </div>
                 ))}
               </div>
-            </ScrollArea>
+            </div>
           </>
         ) : (
           /* ── Normal exam list view ── */
           <>
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={`Search in ${activeTab}...`}
-                value={filter}
-                onChange={e => setFilter(e.target.value)}
-                className="pl-9 text-sm"
-              />
-            </div>
-
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -751,11 +830,10 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
               <>
                 <p className="text-xs text-muted-foreground mb-3">
                   {filtered.length} exam{filtered.length !== 1 ? 's' : ''}
-                  {filter && ` matching "${filter}"`}
                   {' · '}{groups.length} subject{groups.length !== 1 ? 's' : ''}
                 </p>
 
-                <ScrollArea className="flex-1">
+                <div ref={scrollRef} className="flex-1 overflow-y-auto">
                   <div className="flex flex-col gap-3 pb-6">
                     {groups.length === 0 && (
                       <p className="text-sm text-muted-foreground text-center py-10">
@@ -809,7 +887,7 @@ export function ExamSelectPage({ onSelect, onReviewAttempt, onOpenBookmark, onOp
                       )
                     })}
                   </div>
-                </ScrollArea>
+                </div>
               </>
             )}
           </>

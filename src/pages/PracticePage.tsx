@@ -12,6 +12,7 @@ import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2 
 import type { ExamState, Question, QuestionStatus, Section } from '../types/exam'
 import { natCorrect } from '../lib/natCorrect'
 import { effectiveAnswer } from '../lib/answerOverrides'
+import { loadSession, saveSession, clearSession } from '../lib/practiceSession'
 
 interface Props {
   state: ExamState
@@ -32,10 +33,15 @@ function isCorrect(q: Question, answer: string | string[] | undefined): boolean 
 
 export function PracticePage({ state, onExit }: Props) {
   const { exam } = state
-  const [currentSection, setCurrentSection] = useState(state.currentSection)
-  const [currentQuestion, setCurrentQuestion] = useState(state.currentQuestion)
-  const [localAnswers, setLocalAnswers] = useState<Record<string, string | string[]>>({})
-  const [checked, setChecked] = useState<Record<string, boolean>>({})
+  const isNptel = !!exam?._nptelManifest
+  // Load saved session once on mount (ignore for NPTEL since sections are dynamic)
+  const savedSession = useMemo(() => (exam && !isNptel ? loadSession(exam.name) : null), []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [currentSection, setCurrentSection] = useState(() => savedSession?.currentSection ?? state.currentSection)
+  const [currentQuestion, setCurrentQuestion] = useState(() => savedSession?.currentQuestion ?? state.currentQuestion)
+  const [localAnswers, setLocalAnswers] = useState<Record<string, string | string[]>>(() => savedSession?.localAnswers ?? {})
+  const [checked, setChecked] = useState<Record<string, boolean>>(() => savedSession?.checked ?? {})
+  const [resumed, setResumed] = useState(() => !!savedSession)
   const [fontSize, setFontSize] = useState<FontSize>(
     () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
   )
@@ -91,6 +97,22 @@ export function PracticePage({ state, onExit }: Props) {
   }, [fontSize])
 
   const handleFontSize = useCallback((s: FontSize) => setFontSize(s), [])
+
+  // ── Persist practice session ──────────────────────────────────────
+  useEffect(() => {
+    if (!exam || isNptel) return
+    saveSession({ examName: exam.name, currentSection, currentQuestion, localAnswers, checked })
+  }, [currentSection, currentQuestion, localAnswers, checked]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleExit = () => { clearSession(); onExit() }
+  const startFresh = () => {
+    clearSession()
+    setLocalAnswers({})
+    setChecked({})
+    setCurrentSection(0)
+    setCurrentQuestion(0)
+    setResumed(false)
+  }
 
   // ── NAT auto-focus ────────────────────────────────────────────────
   useEffect(() => {
@@ -274,7 +296,7 @@ export function PracticePage({ state, onExit }: Props) {
       </div>
 
       <div className="p-3 border-t border-border">
-        <Button variant="outline" size="sm" className="w-full gap-2" onClick={onExit}>
+        <Button variant="outline" size="sm" className="w-full gap-2" onClick={handleExit}>
           <LogOut className="w-3.5 h-3.5" />
           Exit Practice
         </Button>
@@ -289,6 +311,14 @@ export function PracticePage({ state, onExit }: Props) {
       <div className="mt-[60px] flex h-[calc(100vh-60px)]">
         {/* LEFT */}
         <div className="flex-1 overflow-auto p-4 md:mr-[260px]">
+          {/* Resume banner */}
+          {resumed && (
+            <div className="mb-3 flex items-center gap-2 px-3 py-2 rounded-md bg-muted border border-border text-xs text-muted-foreground">
+              <span>Resumed previous session · {checkedCount} checked</span>
+              <button onClick={startFresh} className="ml-auto hover:text-foreground transition-colors">Start fresh</button>
+            </div>
+          )}
+
           {/* Section tabs */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             {sections.map((sec, i) => (
