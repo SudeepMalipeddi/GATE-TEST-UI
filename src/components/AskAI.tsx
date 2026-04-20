@@ -96,6 +96,15 @@ function formatRpd(rpd: number | null): string {
   return rpd.toLocaleString()
 }
 
+// ── Module-level background request registry ──────────────────────
+// Requests survive component unmounts — result is saved to localStorage,
+// then the completion listener notifies whichever component is mounted.
+const activeRequests = new Map<string, AbortController>()
+const completionListeners = new Set<(questionId: string) => void>()
+function notifyListeners(questionId: string) {
+  completionListeners.forEach(l => l(questionId))
+}
+
 // ── Local request counter (per model, resets at UTC midnight) ──────
 function usageKey(modelId: string) { return `gemini_usage_${modelId}` }
 
@@ -634,17 +643,27 @@ export function AskAI({ question }: Props) {
   // Re-render trigger so header usage count updates after each request
   const [usageTick, setUsageTick] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const abortRef  = useRef<AbortController | null>(null)
+  // Track current question id so async callbacks don't clobber a different question
+  const currentQidRef = useRef(question.id)
 
   useEffect(() => {
+    currentQidRef.current = question.id
     setMessages(loadCachedMessages(question.id))
     setError(null)
-    // Abort any in-flight request when switching questions
-    abortRef.current?.abort()
+    // Reflect whether a background request is already in-flight for this question
+    setLoading(activeRequests.has(question.id))
   }, [question.id])
 
-  // Abort on unmount
-  useEffect(() => () => { abortRef.current?.abort() }, [])
+  // Subscribe to background-request completion notifications
+  useEffect(() => {
+    const listener = (completedQid: string) => {
+      if (completedQid !== currentQidRef.current) return
+      setMessages(loadCachedMessages(completedQid))
+      setLoading(false)
+    }
+    completionListeners.add(listener)
+    return () => { completionListeners.delete(listener) }
+  }, [])
 
   // Escape to stop
   useEffect(() => {
@@ -656,7 +675,7 @@ export function AskAI({ question }: Props) {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
 
-  const stop = () => { abortRef.current?.abort() }
+  const stop = () => { activeRequests.get(question.id)?.abort() }
 
   const providerLabel = () => {
     const p = localStorage.getItem(KEY_PROVIDER) as Provider | null
@@ -678,8 +697,9 @@ export function AskAI({ question }: Props) {
     setInput('')
     setError(null)
 
+    const qid = question.id
     const controller = new AbortController()
-    abortRef.current = controller
+    activeRequests.set(qid, controller)
 
     const userMsg: Message = { role: 'user', text: q }
     const nextMessages = [...messages, userMsg]
@@ -707,23 +727,29 @@ export function AskAI({ question }: Props) {
         )
       }
 
-      setMessages(prev => {
-        const next = [...prev, { role: 'assistant' as const, text: result.text, thinking: result.thinking }]
-        saveCachedMessages(question.id, next)
-        return next
-      })
+      const finalMessages = [...nextMessages, { role: 'assistant' as const, text: result.text, thinking: result.thinking }]
+      // Persist to localStorage first — survives if component has navigated away
+      saveCachedMessages(qid, finalMessages)
+      // Only update React state if we're still viewing this question
+      if (currentQidRef.current === qid) setMessages(finalMessages)
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') {
-        // Cancelled — silently roll back the pending user message and restore input
-        setMessages(prev => prev.slice(0, -1))
-        setInput(q)
+        // Cancelled — roll back the pending user message and restore input
+        if (currentQidRef.current === qid) {
+          setMessages(prev => prev.slice(0, -1))
+          setInput(q)
+        }
       } else {
-        setError(e instanceof Error ? e.message : 'Unknown error')
-        setMessages(prev => prev.slice(0, -1))
-        setInput(q)
+        if (currentQidRef.current === qid) {
+          setError(e instanceof Error ? e.message : 'Unknown error')
+          setMessages(prev => prev.slice(0, -1))
+          setInput(q)
+        }
       }
     } finally {
-      setLoading(false)
+      activeRequests.delete(qid)
+      notifyListeners(qid)
+      if (currentQidRef.current === qid) setLoading(false)
     }
   }
 
