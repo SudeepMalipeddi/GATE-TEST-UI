@@ -133,6 +133,11 @@ export function PracticePage({ state, onExit }: Props) {
       const sec = sections[currentSection]
       const q = sec?.questions[currentQuestion]
       if (!q) return
+
+      // Arrow key navigation always works
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrev(); return }
+      if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); return }
+
       const qChecked = checked[q.id] ?? false
       if (qChecked) return
 
