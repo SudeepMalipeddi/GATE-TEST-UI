@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Loader2, Send, Trash2, Settings, ChevronDown, ChevronRight, Brain, RefreshCw } from 'lucide-react'
+import { Loader2, Send, Trash2, Settings, ChevronDown, ChevronRight, Brain, RefreshCw, Square } from 'lucide-react'
 import type { Question } from '../types/exam'
 
 interface Props {
@@ -160,6 +160,7 @@ async function callGemini(
   modelId: string,
   systemContext: string,
   messages: Message[],
+  signal?: AbortSignal,
 ): Promise<{ text: string; thinking?: string }> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`
   const contents = [
@@ -171,6 +172,7 @@ async function callGemini(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contents }),
+    signal,
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -186,6 +188,7 @@ async function callOllama(
   model: string,
   systemContext: string,
   messages: Message[],
+  signal?: AbortSignal,
 ): Promise<{ text: string; thinking?: string }> {
   const url = `${baseUrl.replace(/\/$/, '')}/api/chat`
   const res = await fetch(url, {
@@ -199,6 +202,7 @@ async function callOllama(
         ...messages.map(m => ({ role: m.role, content: m.text })),
       ],
     }),
+    signal,
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -630,12 +634,29 @@ export function AskAI({ question }: Props) {
   // Re-render trigger so header usage count updates after each request
   const [usageTick, setUsageTick] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const abortRef  = useRef<AbortController | null>(null)
 
   useEffect(() => {
     setMessages(loadCachedMessages(question.id))
     setError(null)
+    // Abort any in-flight request when switching questions
+    abortRef.current?.abort()
   }, [question.id])
+
+  // Abort on unmount
+  useEffect(() => () => { abortRef.current?.abort() }, [])
+
+  // Escape to stop
+  useEffect(() => {
+    if (!loading) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') stop() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
+
+  const stop = () => { abortRef.current?.abort() }
 
   const providerLabel = () => {
     const p = localStorage.getItem(KEY_PROVIDER) as Provider | null
@@ -657,20 +678,23 @@ export function AskAI({ question }: Props) {
     setInput('')
     setError(null)
 
+    const controller = new AbortController()
+    abortRef.current = controller
+
     const userMsg: Message = { role: 'user', text: q }
     const nextMessages = [...messages, userMsg]
     setMessages(nextMessages)
     setLoading(true)
 
     try {
-      const provider    = (localStorage.getItem(KEY_PROVIDER) as Provider | null) ?? 'gemini'
+      const provider      = (localStorage.getItem(KEY_PROVIDER) as Provider | null) ?? 'gemini'
       const systemContext = buildSystemContext(question)
       let result: { text: string; thinking?: string }
 
       if (provider === 'gemini') {
         const apiKey  = localStorage.getItem(KEY_GEMINI_KEY)   ?? ''
         const modelId = localStorage.getItem(KEY_GEMINI_MODEL) ?? DEFAULT_GEMINI_MODEL
-        result = await callGemini(apiKey, modelId, systemContext, nextMessages)
+        result = await callGemini(apiKey, modelId, systemContext, nextMessages, controller.signal)
         incrementUsage(modelId)
         setUsageTick(t => t + 1)
       } else {
@@ -679,6 +703,7 @@ export function AskAI({ question }: Props) {
           localStorage.getItem(KEY_OLLAMA_MODEL) ?? '',
           systemContext,
           nextMessages,
+          controller.signal,
         )
       }
 
@@ -688,9 +713,15 @@ export function AskAI({ question }: Props) {
         return next
       })
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Unknown error')
-      setMessages(prev => prev.slice(0, -1))
-      setInput(q)
+      if (e instanceof DOMException && e.name === 'AbortError') {
+        // Cancelled — silently roll back the pending user message and restore input
+        setMessages(prev => prev.slice(0, -1))
+        setInput(q)
+      } else {
+        setError(e instanceof Error ? e.message : 'Unknown error')
+        setMessages(prev => prev.slice(0, -1))
+        setInput(q)
+      }
     } finally {
       setLoading(false)
     }
@@ -766,9 +797,15 @@ export function AskAI({ question }: Props) {
           className="text-sm"
           disabled={loading}
         />
-        <Button size="sm" onClick={ask} disabled={!input.trim() || loading} className="flex-shrink-0">
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-        </Button>
+        {loading ? (
+          <Button size="sm" variant="outline" onClick={stop} className="flex-shrink-0 gap-1.5" title="Stop (Esc)">
+            <Square className="w-3.5 h-3.5 fill-current" />
+          </Button>
+        ) : (
+          <Button size="sm" onClick={ask} disabled={!input.trim()} className="flex-shrink-0">
+            <Send className="w-4 h-4" />
+          </Button>
+        )}
       </div>
     </div>
   )
