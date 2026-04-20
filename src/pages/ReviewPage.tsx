@@ -302,6 +302,7 @@ export function ReviewPage({ state, onBack, backLabel = 'Results' }: Props) {
                 totalQuestions={totalQuestions}
                 userAnswer={answers[question.id]}
                 examName={exam.name}
+                examId={exam._examId}
                 timeSpentSeconds={state.timeSpent[question.id]}
               />
 

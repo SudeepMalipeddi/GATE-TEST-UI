@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
-import { Pencil, X } from 'lucide-react'
+import { Pencil, X, Check } from 'lucide-react'
 import type { Question } from '../types/exam'
 import { getOverride, setOverride, removeOverride, effectiveAnswer } from '../lib/answerOverrides'
 
 interface Props {
   question: Question
+  examId?: string
 }
 
-export function FixAnswerPanel({ question }: Props) {
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
+export function FixAnswerPanel({ question, examId }: Props) {
   const [editing, setEditing] = useState(false)
   const [editVal, setEditVal] = useState<string | string[]>('')
   const [hasOverride, setHasOverride] = useState(() => !!getOverride(question.id))
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
 
   useEffect(() => {
     setEditing(false)
     setHasOverride(!!getOverride(question.id))
+    setSaveStatus('idle')
   }, [question.id])
 
   const openEditor = () => {
@@ -22,18 +27,36 @@ export function FixAnswerPanel({ question }: Props) {
     setEditing(true)
   }
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     const isEmpty = !editVal || editVal === '' || (Array.isArray(editVal) && editVal.length === 0)
     if (isEmpty) return
+    // Always write to localStorage immediately
     setOverride(question.id, editVal)
     setHasOverride(true)
     setEditing(false)
+
+    // Also patch the JSON file if we know which exam this belongs to
+    if (examId) {
+      setSaveStatus('saving')
+      try {
+        const res = await fetch('/api/patch-answer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ examId, questionId: question.id, answer: editVal }),
+        })
+        setSaveStatus(res.ok ? 'saved' : 'error')
+        if (res.ok) setTimeout(() => setSaveStatus('idle'), 2500)
+      } catch {
+        setSaveStatus('error')
+      }
+    }
   }
 
   const clearEdit = () => {
     removeOverride(question.id)
     setHasOverride(false)
     setEditing(false)
+    setSaveStatus('idle')
   }
 
   const toggleMsqOption = (optId: string) => {
@@ -51,7 +74,18 @@ export function FixAnswerPanel({ question }: Props) {
             ? <span className="text-amber-400 font-medium">Correct answer overridden</span>
             : <span>Correct answer incorrect or missing?</span>}
         </p>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {saveStatus === 'saving' && (
+            <span className="text-[10px] text-muted-foreground animate-pulse">Saving to file…</span>
+          )}
+          {saveStatus === 'saved' && (
+            <span className="flex items-center gap-0.5 text-[10px] text-[#22C55E]">
+              <Check className="w-3 h-3" /> Saved to file
+            </span>
+          )}
+          {saveStatus === 'error' && (
+            <span className="text-[10px] text-[#EF4444]">File write failed</span>
+          )}
           {hasOverride && !editing && (
             <button
               onClick={clearEdit}

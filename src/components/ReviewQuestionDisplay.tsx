@@ -21,6 +21,7 @@ interface Props {
   totalQuestions: number
   userAnswer: string | string[] | undefined
   examName?: string
+  examId?: string
   timeSpentSeconds?: number
 }
 
@@ -118,7 +119,7 @@ function OutcomeTag({ outcome }: { outcome: OptionOutcome }) {
 }
 
 
-export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer, examName, timeSpentSeconds }: Props) {
+export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions, userAnswer, examName, examId, timeSpentSeconds }: Props) {
   const [copied, setCopied] = useState(false)
   const [bookmarked, setBookmarked] = useState(() => !!getBookmark(question.id))
   const [note, setNote] = useState(() => getBookmark(question.id)?.note ?? '')
@@ -308,7 +309,7 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
           </div>
         )}
 
-        <FixAnswerPanel question={question} />
+        <FixAnswerPanel question={question} examId={examId} />
       </div>
     </div>
   )

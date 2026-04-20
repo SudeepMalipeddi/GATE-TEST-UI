@@ -359,6 +359,7 @@ export function PracticePage({ state, onExit }: Props) {
                     totalQuestions={totalQuestions}
                     userAnswer={localAnswer}
                     examName={displayExam.name}
+                    examId={displayExam._examId}
                   />
                   <AskAI question={question} />
                 </>
@@ -403,7 +404,7 @@ export function PracticePage({ state, onExit }: Props) {
           </Card>
 
           {/* Fix answer — always accessible, outside the question card */}
-          {!isChecked && <FixAnswerPanel question={question} />}
+          {!isChecked && <FixAnswerPanel question={question} examId={displayExam._examId} />}
         </div>
 
         {/* RIGHT sidebar (desktop) */}

@@ -15,5 +15,6 @@ export async function loadCatalog(): Promise<ExamMeta[]> {
 
 export async function loadExam(id: string): Promise<ExamData> {
   const res = await fetch(`/exams/${id}.json`)
-  return res.json()
+  const data = await res.json()
+  return { ...data, _examId: id }
 }

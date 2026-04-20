@@ -38,6 +38,7 @@ export interface ExamData {
   name: string
   durationMinutes: number
   sections: Section[]
+  _examId?: string
   _nptelManifest?: NptelManifestEntry[]
 }
 
