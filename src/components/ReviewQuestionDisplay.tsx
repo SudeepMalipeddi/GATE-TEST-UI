@@ -135,20 +135,17 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
 
   const handleCopy = () => {
     const doc = new DOMParser().parseFromString(question.text, 'text/html')
-    // Replace <a href="url">...</a> with readable text before stripping tags
+    // Replace <img src="url"> with [Image: url] before stripping tags
+    doc.querySelectorAll('img[src]').forEach(img => {
+      const src = img.getAttribute('src') ?? ''
+      const alt = img.getAttribute('alt')?.trim() ?? ''
+      img.replaceWith(alt ? `[Image: ${alt} — ${src}]` : `[Image: ${src}]`)
+    })
+    // Replace <a href="url">text</a> with "text (url)"
     doc.querySelectorAll('a[href]').forEach(a => {
       const href = a.getAttribute('href') ?? ''
       const label = a.textContent?.trim() ?? ''
-      let replacement: string
-      if (!label) {
-        // Link wraps an image or has no text — just emit the URL
-        replacement = href
-      } else if (label === href) {
-        replacement = href
-      } else {
-        replacement = `${label} (${href})`
-      }
-      a.replaceWith(replacement)
+      a.replaceWith(label && label !== href ? `${label} (${href})` : href || label)
     })
     const text = doc.body.textContent ?? ''
     navigator.clipboard.writeText(text.trim()).then(() => {
