@@ -135,11 +135,19 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
 
   const handleCopy = () => {
     const doc = new DOMParser().parseFromString(question.text, 'text/html')
-    // Replace <a href="url">text</a> with "text (url)" before stripping tags
+    // Replace <a href="url">...</a> with readable text before stripping tags
     doc.querySelectorAll('a[href]').forEach(a => {
       const href = a.getAttribute('href') ?? ''
       const label = a.textContent?.trim() ?? ''
-      const replacement = href && label !== href ? `${label} (${href})` : href || label
+      let replacement: string
+      if (!label) {
+        // Link wraps an image or has no text — just emit the URL
+        replacement = href
+      } else if (label === href) {
+        replacement = href
+      } else {
+        replacement = `${label} (${href})`
+      }
       a.replaceWith(replacement)
     })
     const text = doc.body.textContent ?? ''
