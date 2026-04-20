@@ -134,7 +134,15 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
   }, [question.id])
 
   const handleCopy = () => {
-    const text = new DOMParser().parseFromString(question.text, 'text/html').body.textContent ?? ''
+    const doc = new DOMParser().parseFromString(question.text, 'text/html')
+    // Replace <a href="url">text</a> with "text (url)" before stripping tags
+    doc.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href') ?? ''
+      const label = a.textContent?.trim() ?? ''
+      const replacement = href && label !== href ? `${label} (${href})` : href || label
+      a.replaceWith(replacement)
+    })
+    const text = doc.body.textContent ?? ''
     navigator.clipboard.writeText(text.trim()).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
