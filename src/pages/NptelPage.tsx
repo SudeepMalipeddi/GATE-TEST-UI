@@ -2,10 +2,18 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronRight, BookOpen, Zap, ClipboardList, Layers } from 'lucide-react'
 import type { NptelCourseMeta, NptelWeek, NptelLectureMeta, NptelLectureData, ExamData } from '../types/exam'
 
+type Tab = 'notes' | 'flashcards' | 'questions'
+type OpenLectureFn = (
+  data: NptelLectureData,
+  initialTab: Tab,
+  onNext: (() => Promise<void>) | null,
+  onPrev: (() => Promise<void>) | null,
+) => void
+
 interface Props {
   onBack: () => void
   onPractice: (exam: ExamData) => void
-  onOpenLecture: (data: NptelLectureData, initialTab: 'notes' | 'flashcards' | 'questions') => void
+  onOpenLecture: OpenLectureFn
 }
 
 // ── Data loading ───────────────────────────────────────────────────
@@ -88,23 +96,17 @@ function subjectChip(subject: string) {
 // ── Lecture row ────────────────────────────────────────────────────
 function LectureRow({
   lec,
-  courseId,
-  onOpenLecture,
+  onOpen,
 }: {
   lec: NptelLectureMeta
-  courseId: string
-  onOpenLecture: (data: NptelLectureData, tab: 'notes' | 'flashcards' | 'questions') => void
+  onOpen: (tab: Tab) => Promise<void>
 }) {
-  const [loading, setLoading] = useState<'notes' | 'flashcards' | 'questions' | null>(null)
+  const [loading, setLoading] = useState<Tab | null>(null)
 
-  const open = async (tab: 'notes' | 'flashcards' | 'questions') => {
+  const open = async (tab: Tab) => {
     setLoading(tab)
-    try {
-      const data = await loadLecture(courseId, lec.file)
-      onOpenLecture(data, tab)
-    } finally {
-      setLoading(null)
-    }
+    try { await onOpen(tab) }
+    finally { setLoading(null) }
   }
 
   return (
@@ -155,14 +157,12 @@ function LectureRow({
 // ── Week accordion ─────────────────────────────────────────────────
 function WeekSection({
   week,
-  courseId,
   defaultOpen,
-  onOpenLecture,
+  lecOpenMap,
 }: {
   week: NptelWeek
-  courseId: string
   defaultOpen: boolean
-  onOpenLecture: (data: NptelLectureData, tab: 'notes' | 'flashcards' | 'questions') => void
+  lecOpenMap: Map<string, (tab: Tab) => Promise<void>>
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
@@ -178,7 +178,11 @@ function WeekSection({
       {open && (
         <div className="divide-y divide-border/50">
           {week.lectures.map(lec => (
-            <LectureRow key={lec.id} lec={lec} courseId={courseId} onOpenLecture={onOpenLecture} />
+            <LectureRow
+              key={lec.id}
+              lec={lec}
+              onOpen={lecOpenMap.get(lec.id)!}
+            />
           ))}
         </div>
       )}
@@ -194,12 +198,31 @@ function CourseCard({
 }: {
   course: NptelCourseMeta
   onPractice: (exam: ExamData) => void
-  onOpenLecture: (data: NptelLectureData, tab: 'notes' | 'flashcards' | 'questions') => void
+  onOpenLecture: OpenLectureFn
 }) {
   const [open, setOpen] = useState(false)
   const [structure, setStructure] = useState<NptelWeek[] | null>(null)
   const [loadingAll, setLoadingAll] = useState(false)
   const [loadingFlash, setLoadingFlash] = useState(false)
+
+  // Flat ordered list of all lectures; rebuilt whenever structure changes
+  const flat = structure
+    ? structure.flatMap(w => w.lectures.map(lec => ({ courseId: course.id, lec })))
+    : []
+
+  // Open lecture at flat[idx] in the given tab, with correct prev/next callbacks
+  const openAtIdx = async (idx: number, tab: Tab) => {
+    const { courseId, lec } = flat[idx]
+    const data = await loadLecture(courseId, lec.file)
+    const onNext = idx + 1 < flat.length ? () => openAtIdx(idx + 1, 'notes') : null
+    const onPrev = idx > 0              ? () => openAtIdx(idx - 1, 'notes') : null
+    onOpenLecture(data, tab, onNext, onPrev)
+  }
+
+  // Map from lecture id → open function (used by LectureRow via WeekSection)
+  const lecOpenMap = new Map<string, (tab: Tab) => Promise<void>>(
+    flat.map(({ lec }, i) => [lec.id, (tab: Tab) => openAtIdx(i, tab)])
+  )
 
   const toggle = async () => {
     if (!open && !structure) {
@@ -247,7 +270,7 @@ function CourseCard({
         flashcards: allCards,
         questions: [],
       }
-      onOpenLecture(syntheticData, 'flashcards')
+      onOpenLecture(syntheticData, 'flashcards', null, null)
     } finally {
       setLoadingFlash(false)
     }
@@ -305,9 +328,8 @@ function CourseCard({
             <WeekSection
               key={week.week}
               week={week}
-              courseId={course.id}
               defaultOpen={i === 0}
-              onOpenLecture={onOpenLecture}
+              lecOpenMap={lecOpenMap}
             />
           ))}
         </div>

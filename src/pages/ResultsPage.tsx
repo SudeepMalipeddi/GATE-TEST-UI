@@ -87,6 +87,25 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
     secs: sec.questions.reduce((a, q) => a + (timeSpent[q.id] ?? 0), 0),
   }))
 
+  // Question outcome grid
+  const maxTime = Math.max(...allQsTime.map(x => x.secs), 1)
+  const questionGrid = allQsTime.map(({ q, qNum, secs, sectionName }) => {
+    const ans = answers[q.id]
+    let outcome: 'correct' | 'wrong' | 'skipped'
+    if (!ans || ans === '' || (Array.isArray(ans) && ans.length === 0)) {
+      outcome = 'skipped'
+    } else if (q.type === 'MCQ') {
+      outcome = ans === q.correctAnswer ? 'correct' : 'wrong'
+    } else if (q.type === 'MSQ') {
+      const u = Array.isArray(ans) ? [...ans].sort() : []
+      const c = Array.isArray(q.correctAnswer) ? [...q.correctAnswer].sort() : []
+      outcome = JSON.stringify(u) === JSON.stringify(c) ? 'correct' : 'wrong'
+    } else {
+      outcome = natCorrect(ans, q.correctAnswer) ? 'correct' : 'wrong'
+    }
+    return { qNum, secs, sectionName, outcome }
+  })
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-5">
@@ -159,6 +178,47 @@ export function ResultsPage({ state, onReview, onReset }: Props) {
               Review Answers
             </Button>
           </CardFooter>
+        </Card>
+
+        {/* Question overview heatmap */}
+        <Card>
+          <CardHeader className="pb-3 border-b border-border">
+            <CardTitle className="text-sm">Question Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-1.5">
+              {questionGrid.map(({ qNum, outcome, secs }) => {
+                const alpha = totalTimeUsed > 0 ? Math.max(0.3, secs / maxTime) : 1
+                const rgb = outcome === 'correct' ? '34,197,94' : outcome === 'wrong' ? '239,68,68' : '100,100,100'
+                return (
+                  <div
+                    key={qNum}
+                    title={`Q.${qNum} · ${outcome}${secs > 0 ? ` · ${fmtSeconds(secs)}` : ''}`}
+                    style={{ backgroundColor: `rgba(${rgb},${alpha})` }}
+                    className="w-4 h-4 rounded-sm cursor-default"
+                  />
+                )
+              })}
+            </div>
+            <div className="flex items-center gap-4 mt-3">
+              {[
+                { rgb: '34,197,94',   label: 'Correct' },
+                { rgb: '239,68,68',   label: 'Wrong'   },
+                { rgb: '100,100,100', label: 'Skipped' },
+              ].map(({ rgb, label }) => (
+                <span key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span
+                    className="w-3 h-3 rounded-sm flex-shrink-0 inline-block"
+                    style={{ backgroundColor: `rgba(${rgb},0.9)` }}
+                  />
+                  {label}
+                </span>
+              ))}
+              {totalTimeUsed > 0 && (
+                <span className="ml-auto text-xs text-muted-foreground opacity-50">darker = more time</span>
+              )}
+            </div>
+          </CardContent>
         </Card>
 
         {/* Time analysis — only shown when tracking data exists */}

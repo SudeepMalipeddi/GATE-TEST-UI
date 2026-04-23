@@ -13,6 +13,8 @@ interface Props {
   initialTab: Tab
   onBack: () => void
   onPractice: (exam: ExamData) => void
+  onNextLecture?: (() => Promise<void>) | null
+  onPrevLecture?: (() => Promise<void>) | null
 }
 
 function buildSingleLectureExam(data: NptelLectureData): ExamData {
@@ -35,9 +37,24 @@ function NotesTab({ notes }: { notes: string }) {
           h2: ({ children }) => <h2 className="text-xl font-semibold mt-6 mb-3 text-foreground">{children}</h2>,
           h3: ({ children }) => <h3 className="text-base font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
           p:  ({ children }) => <p className="text-sm leading-7 mb-4 text-foreground/90">{children}</p>,
-          ul: ({ children }) => <ul className="list-disc list-inside space-y-1.5 mb-4 text-sm text-foreground/90">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside space-y-1.5 mb-4 text-sm text-foreground/90">{children}</ol>,
-          li: ({ children }) => <li className="leading-6">{children}</li>,
+          ul: ({ children }) => <ul className="space-y-1.5 mb-4 text-sm text-foreground/90">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal list-outside pl-5 space-y-1.5 mb-4 text-sm text-foreground/90">{children}</ol>,
+          li: ({ children }) => {
+            const arr = Array.isArray(children) ? children as React.ReactNode[] : [children]
+            const isTask = arr.some(c => c !== null && typeof c === 'object' && 'props' in (c as object) && (c as { props?: { type?: string } }).props?.type === 'checkbox')
+            if (isTask) return <li className="leading-relaxed list-none">{children}</li>
+            return (
+              <li className="leading-relaxed flex gap-2 list-none">
+                <span className="text-muted-foreground/40 flex-shrink-0 select-none mt-[3px] text-xs">•</span>
+                <span className="flex-1">{children}</span>
+              </li>
+            )
+          },
+          input: ({ type, checked }) => type === 'checkbox' ? (
+            <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-sm border text-[11px] align-middle mr-1.5 flex-shrink-0 ${checked ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400' : 'border-border bg-muted/30'}`}>
+              {checked ? '✓' : ''}
+            </span>
+          ) : <input type={type} />,
           code: ({ children, className }) => {
             const isBlock = className?.includes('language-')
             return isBlock
@@ -60,11 +77,19 @@ function NotesTab({ notes }: { notes: string }) {
 }
 
 // ── Flashcards tab ─────────────────────────────────────────────────
-function FlashcardsTab({ cards }: { cards: NptelFlashcard[] }) {
+function FlashcardsTab({
+  cards,
+  onNextLecture,
+  onPrevLecture,
+}: {
+  cards: NptelFlashcard[]
+  onNextLecture?: (() => Promise<void>) | null
+  onPrevLecture?: (() => Promise<void>) | null
+}) {
   if (cards.length === 0) {
     return <div className="py-12 text-center text-muted-foreground">No flashcards for this lecture.</div>
   }
-  return <FlashcardDeck cards={cards} />
+  return <FlashcardDeck cards={cards} onNextLecture={onNextLecture} onPrevLecture={onPrevLecture} />
 }
 
 // ── Questions tab ──────────────────────────────────────────────────
@@ -85,8 +110,41 @@ function QuestionsTab({ data, onPractice }: { data: NptelLectureData; onPractice
   )
 }
 
+// ── Header prev/next ───────────────────────────────────────────────
+function HeaderLectureNav({
+  onPrev,
+  onNext,
+}: {
+  onPrev?: (() => Promise<void>) | null
+  onNext?: (() => Promise<void>) | null
+}) {
+  const [loadingPrev, setLoadingPrev] = useState(false)
+  const [loadingNext, setLoadingNext] = useState(false)
+  if (!onPrev && !onNext) return null
+  return (
+    <div className="flex items-center gap-1 flex-shrink-0">
+      <button
+        disabled={!onPrev || loadingPrev}
+        onClick={async () => { if (!onPrev) return; setLoadingPrev(true); await onPrev(); setLoadingPrev(false) }}
+        className="px-2.5 py-1 text-xs rounded border border-border hover:bg-accent transition-colors disabled:opacity-40"
+        title="Previous lecture"
+      >
+        {loadingPrev ? '…' : '← Prev'}
+      </button>
+      <button
+        disabled={!onNext || loadingNext}
+        onClick={async () => { if (!onNext) return; setLoadingNext(true); await onNext(); setLoadingNext(false) }}
+        className="px-2.5 py-1 text-xs rounded border border-border hover:bg-accent transition-colors disabled:opacity-40"
+        title="Next lecture"
+      >
+        {loadingNext ? '…' : 'Next →'}
+      </button>
+    </div>
+  )
+}
+
 // ── Main ───────────────────────────────────────────────────────────
-export function NptelLecturePage({ data, initialTab, onBack, onPractice }: Props) {
+export function NptelLecturePage({ data, initialTab, onBack, onPractice, onNextLecture, onPrevLecture }: Props) {
   const [tab, setTab] = useState<Tab>(initialTab)
 
   const tabs: { id: Tab; label: string; disabled: boolean }[] = [
@@ -98,14 +156,15 @@ export function NptelLecturePage({ data, initialTab, onBack, onPractice }: Props
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <div className="border-b border-border bg-card px-6 py-3 flex items-center gap-4 flex-shrink-0">
+      <div className="border-b border-border bg-card px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <button
           onClick={onBack}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
         >
           ← Back
         </button>
-        <h1 className="text-sm font-medium truncate">{data.lecture_name}</h1>
+        <h1 className="text-sm font-medium truncate flex-1 min-w-0">{data.lecture_name}</h1>
+        <HeaderLectureNav onPrev={onPrevLecture} onNext={onNextLecture} />
       </div>
 
       {/* Tabs */}
@@ -131,7 +190,7 @@ export function NptelLecturePage({ data, initialTab, onBack, onPractice }: Props
       {/* Content */}
       <div className="flex-1 overflow-auto">
         {tab === 'notes'      && data.notes      && <NotesTab notes={data.notes} />}
-        {tab === 'flashcards' && <FlashcardsTab cards={data.flashcards} />}
+        {tab === 'flashcards' && <FlashcardsTab cards={data.flashcards} onNextLecture={onNextLecture} onPrevLecture={onPrevLecture} />}
         {tab === 'questions'  && <QuestionsTab data={data} onPractice={onPractice} />}
       </div>
     </div>

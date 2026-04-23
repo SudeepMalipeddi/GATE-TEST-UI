@@ -8,7 +8,9 @@ import { QuestionDisplay } from '../components/QuestionDisplay'
 import { ReviewQuestionDisplay } from '../components/ReviewQuestionDisplay'
 import { AskAI } from '../components/AskAI'
 import { FixAnswerPanel } from '../components/FixAnswerPanel'
-import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2 } from 'lucide-react'
+import { LayoutGrid, ChevronLeft, ChevronRight, LogOut, RotateCcw, CheckCircle2, Eye, EyeOff, Clock } from 'lucide-react'
+import { ShortcutsModal } from '../components/ShortcutsModal'
+import type { ShortcutCategory } from '../components/ShortcutsModal'
 import type { ExamState, Question, QuestionStatus, Section } from '../types/exam'
 import { natCorrect } from '../lib/natCorrect'
 import { effectiveAnswer } from '../lib/answerOverrides'
@@ -42,6 +44,9 @@ export function PracticePage({ state, onExit }: Props) {
   const [localAnswers, setLocalAnswers] = useState<Record<string, string | string[]>>(() => savedSession?.localAnswers ?? {})
   const [checked, setChecked] = useState<Record<string, boolean>>(() => savedSession?.checked ?? {})
   const [resumed, setResumed] = useState(() => !!savedSession)
+  const [showAnswers, setShowAnswers] = useState(false)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const [elapsed, setElapsed] = useState(0)
   const [fontSize, setFontSize] = useState<FontSize>(
     () => (localStorage.getItem('font_size') as FontSize | null) ?? 'md'
   )
@@ -124,6 +129,13 @@ export function PracticePage({ state, onExit }: Props) {
     }
   }, [currentSection, currentQuestion]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Elapsed timer per question ────────────────────────────────────
+  useEffect(() => {
+    setElapsed(0)
+    const id = setInterval(() => setElapsed(e => e + 1), 1000)
+    return () => clearInterval(id)
+  }, [currentSection, currentQuestion])
+
   // ── Keyboard shortcuts ─────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -137,9 +149,13 @@ export function PracticePage({ state, onExit }: Props) {
       // Arrow key navigation always works
       if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrev(); return }
       if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); return }
+      if (e.key === '?') { e.preventDefault(); setShortcutsOpen(v => !v); return }
 
       const qChecked = checked[q.id] ?? false
-      if (qChecked) return
+      if (qChecked) {
+        if (e.key === 'r' || e.key === 'R') { e.preventDefault(); handleTryAgain() }
+        return
+      }
 
       const key = e.key.toLowerCase()
 
@@ -173,6 +189,26 @@ export function PracticePage({ state, onExit }: Props) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [currentSection, currentQuestion, sections, checked, localAnswers])
+
+  function fmtElapsed(s: number) {
+    const m = Math.floor(s / 60)
+    const sec = s % 60
+    return m > 0 ? `${m}m ${sec}s` : `${sec}s`
+  }
+
+  const practiceShortcuts: ShortcutCategory[] = [
+    { category: 'Navigation', items: [
+      { key: '← →', desc: 'Previous / Next question' },
+    ]},
+    { category: 'Answering', items: [
+      { key: 'A – D', desc: 'Select MCQ / toggle MSQ option' },
+      { key: 'Enter', desc: 'Check answer' },
+      { key: 'R',     desc: 'Try again (after checking)' },
+    ]},
+    { category: 'View', items: [
+      { key: '?', desc: 'Toggle this shortcuts panel' },
+    ]},
+  ]
 
   if (!displayExam) return null
 
@@ -311,7 +347,13 @@ export function PracticePage({ state, onExit }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
-      <ExamHeader exam={displayExam} fontSize={fontSize} onFontSizeChange={handleFontSize} />
+      <ExamHeader
+        exam={displayExam}
+        fontSize={fontSize}
+        onFontSizeChange={handleFontSize}
+        onShowShortcuts={() => setShortcutsOpen(true)}
+      />
+      <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} shortcuts={practiceShortcuts} />
 
       <div className="mt-[60px] flex h-[calc(100vh-60px)]">
         {/* LEFT */}
@@ -340,6 +382,19 @@ export function PracticePage({ state, onExit }: Props) {
               </button>
             ))}
 
+            <button
+              onClick={() => setShowAnswers(v => !v)}
+              title={showAnswers ? 'Hide answers' : 'Show all answers'}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${
+                showAnswers
+                  ? 'bg-amber-400/15 text-amber-400 border-amber-400/40 hover:bg-amber-400/20'
+                  : 'bg-transparent text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
+              }`}
+            >
+              {showAnswers ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              {showAnswers ? 'Hide Answers' : 'Show Answers'}
+            </button>
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="ml-auto md:hidden gap-1.5">
@@ -356,7 +411,15 @@ export function PracticePage({ state, onExit }: Props) {
           {/* Question card */}
           <Card>
             <CardContent className="p-5 space-y-4">
-              {isChecked ? (
+              {/* Elapsed timer */}
+              <div className="flex justify-end -mb-2">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="w-3 h-3" />
+                  {fmtElapsed(elapsed)}
+                </span>
+              </div>
+
+              {(isChecked || showAnswers) ? (
                 <>
                   <ReviewQuestionDisplay
                     question={question}
@@ -384,24 +447,26 @@ export function PracticePage({ state, onExit }: Props) {
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </Button>
 
-                <div className="mx-auto flex gap-2">
-                  {isChecked ? (
-                    <Button variant="outline" size="sm" onClick={handleTryAgain} className="gap-1.5">
-                      <RotateCcw className="w-3.5 h-3.5" /> Try Again
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={handleCheck}
-                      disabled={!localAnswer || localAnswer === '' || (Array.isArray(localAnswer) && localAnswer.length === 0)}
-                      className="gap-1.5"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Check Answer
-                    </Button>
-                  )}
-                </div>
+                {!showAnswers && (
+                  <div className="mx-auto flex gap-2">
+                    {isChecked ? (
+                      <Button variant="outline" size="sm" onClick={handleTryAgain} className="gap-1.5">
+                        <RotateCcw className="w-3.5 h-3.5" /> Try Again
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={handleCheck}
+                        disabled={!localAnswer || localAnswer === '' || (Array.isArray(localAnswer) && localAnswer.length === 0)}
+                        className="gap-1.5"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Check Answer
+                      </Button>
+                    )}
+                  </div>
+                )}
 
-                <Button variant="outline" size="sm" onClick={goNext} disabled={!hasNext || loadingNext} className="gap-1.5">
+                <Button variant="outline" size="sm" onClick={goNext} disabled={!hasNext || loadingNext} className={`gap-1.5 ${showAnswers ? 'ml-auto' : ''}`}>
                   {loadingNext ? 'Loading…' : <><span>Next</span> <ChevronRight className="w-4 h-4" /></>}
                 </Button>
               </div>

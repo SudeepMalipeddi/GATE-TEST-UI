@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Calculator } from './Calculator'
-import { Calculator as CalculatorIcon, ALargeSmall, ChevronLeft } from 'lucide-react'
+import { Calculator as CalculatorIcon, ALargeSmall, ChevronLeft, Keyboard } from 'lucide-react'
 import type { ExamData } from '../types/exam'
 
 export type FontSize = 'sm' | 'md' | 'lg'
@@ -10,6 +10,7 @@ interface Props {
   fontSize: FontSize
   onFontSizeChange: (s: FontSize) => void
   onBack?: () => void
+  onShowShortcuts?: () => void
 }
 
 const SIZES: FontSize[] = ['sm', 'md', 'lg']
@@ -20,7 +21,7 @@ const SIZE_CLASS: Record<FontSize, string> = {
   lg: 'text-[16px]',
 }
 
-export function ExamHeader({ exam, fontSize, onFontSizeChange, onBack }: Props) {
+export function ExamHeader({ exam, fontSize, onFontSizeChange, onBack, onShowShortcuts }: Props) {
   const [calcOpen, setCalcOpen] = useState(false)
 
   const cycleFont = () => {
@@ -69,6 +70,19 @@ export function ExamHeader({ exam, fontSize, onFontSizeChange, onBack }: Props) 
           <CalculatorIcon className="w-4 h-4 text-muted-foreground" />
           <span className="text-xs text-muted-foreground hidden sm:inline">Calc</span>
         </button>
+
+        {/* Shortcuts — only shown when caller provides a handler */}
+        {onShowShortcuts && (
+          <button
+            onClick={onShowShortcuts}
+            title="Keyboard shortcuts (?)"
+            className="flex items-center gap-1.5 px-2 py-1 rounded border border-border hover:bg-accent transition-colors"
+            aria-label="Show keyboard shortcuts"
+          >
+            <Keyboard className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground hidden sm:inline">Shortcuts</span>
+          </button>
+        )}
       </header>
 
       <Calculator open={calcOpen} onOpenChange={setCalcOpen} />

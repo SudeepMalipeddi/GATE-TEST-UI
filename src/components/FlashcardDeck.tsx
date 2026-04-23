@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
+import { List, Layers } from 'lucide-react'
 import type { NptelFlashcard } from '../types/exam'
 
 interface Props {
   cards: NptelFlashcard[]
   onDone?: () => void
+  onNextLecture?: (() => Promise<void>) | null
+  onPrevLecture?: (() => Promise<void>) | null
 }
 
 const DIFFICULTY_COLOURS: Record<string, string> = {
@@ -12,12 +15,48 @@ const DIFFICULTY_COLOURS: Record<string, string> = {
   Hard:   'bg-rose-500/15 text-rose-400 border-rose-500/30',
 }
 
-export function FlashcardDeck({ cards, onDone }: Props) {
-  const [index, setIndex]     = useState(0)
+// ── List view ──────────────────────────────────────────────────────
+function FlashcardList({ cards }: { cards: NptelFlashcard[] }) {
+  return (
+    <div className="max-w-2xl mx-auto w-full px-4 py-6 flex flex-col gap-4">
+      {cards.map((card, i) => {
+        const diffClass = DIFFICULTY_COLOURS[card.difficulty] ?? 'bg-muted text-muted-foreground border-border'
+        return (
+          <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
+            {/* Meta row */}
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 bg-muted/30">
+              <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${diffClass}`}>
+                {card.difficulty}
+              </span>
+              <span className="text-xs text-muted-foreground border border-border px-2 py-0.5 rounded-full ml-auto">
+                {card.topic}
+              </span>
+            </div>
+            {/* Question */}
+            <div className="px-4 py-3">
+              <p className="text-sm font-medium leading-relaxed">{card.front}</p>
+            </div>
+            {/* Answer */}
+            <div className="px-4 py-3 border-t border-border/60 bg-primary/5">
+              <p className="text-xs font-semibold text-primary/70 uppercase tracking-wide mb-1">Answer</p>
+              <p className="text-sm leading-relaxed text-foreground/90">{card.back}</p>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export function FlashcardDeck({ cards, onDone, onNextLecture, onPrevLecture }: Props) {
+  const [index, setIndex]       = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const [known, setKnown]     = useState<Set<number>>(new Set())
-  const [review, setReview]   = useState<Set<number>>(new Set())
-  const [done, setDone]       = useState(false)
+  const [known, setKnown]       = useState<Set<number>>(new Set())
+  const [review, setReview]     = useState<Set<number>>(new Set())
+  const [done, setDone]         = useState(false)
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
+  const [loadingNext, setLoadingNext] = useState(false)
+  const [loadingPrev, setLoadingPrev] = useState(false)
 
   const card = cards[index]
   const total = cards.length
@@ -47,7 +86,7 @@ export function FlashcardDeck({ cards, onDone }: Props) {
   }
 
   useEffect(() => {
-    if (done) return
+    if (done || viewMode === 'list') return
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA') return
@@ -62,11 +101,14 @@ export function FlashcardDeck({ cards, onDone }: Props) {
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault()
         if (index > 0) { setRevealed(false); setIndex(i => i - 1) }
+      } else if ((e.key === 'r' || e.key === 'R') && revealed) {
+        e.preventDefault()
+        markReview()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [done, revealed, index]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [done, viewMode, revealed, index]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const restart = () => {
     setIndex(0)
@@ -74,6 +116,25 @@ export function FlashcardDeck({ cards, onDone }: Props) {
     setKnown(new Set())
     setReview(new Set())
     setDone(false)
+  }
+
+  // ── List view toggle ───────────────────────────────────────────
+  if (viewMode === 'list') {
+    return (
+      <div className="flex flex-col w-full">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card flex-shrink-0">
+          <span className="text-xs text-muted-foreground">{cards.length} cards</span>
+          <button
+            onClick={() => setViewMode('card')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded border border-border hover:bg-accent transition-colors"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Card mode
+          </button>
+        </div>
+        <FlashcardList cards={cards} />
+      </div>
+    )
   }
 
   // ── Summary screen ─────────────────────────────────────────────
@@ -95,7 +156,16 @@ export function FlashcardDeck({ cards, onDone }: Props) {
             <div className="text-sm text-muted-foreground mt-1">Total</div>
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap justify-center">
+          {onPrevLecture && (
+            <button
+              disabled={loadingPrev}
+              onClick={async () => { setLoadingPrev(true); await onPrevLecture(); setLoadingPrev(false) }}
+              className="px-4 py-2 text-sm rounded border border-border hover:bg-accent transition-colors disabled:opacity-60"
+            >
+              ← {loadingPrev ? 'Loading…' : 'Prev Lecture'}
+            </button>
+          )}
           {review.size > 0 && (
             <button
               onClick={restart}
@@ -110,10 +180,19 @@ export function FlashcardDeck({ cards, onDone }: Props) {
           >
             Restart deck
           </button>
+          {onNextLecture && (
+            <button
+              disabled={loadingNext}
+              onClick={async () => { setLoadingNext(true); await onNextLecture(); setLoadingNext(false) }}
+              className="px-4 py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60"
+            >
+              {loadingNext ? 'Loading…' : 'Next Lecture →'}
+            </button>
+          )}
           {onDone && (
             <button
               onClick={onDone}
-              className="px-4 py-2 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="px-4 py-2 text-sm rounded border border-border hover:bg-accent transition-colors"
             >
               Done
             </button>
@@ -139,6 +218,14 @@ export function FlashcardDeck({ cards, onDone }: Props) {
         <span className="text-xs text-muted-foreground flex-shrink-0">
           {index + 1} / {total}
         </span>
+        <button
+          onClick={() => setViewMode('list')}
+          title="View all cards"
+          className="flex items-center gap-1 px-2 py-1 text-xs rounded border border-border hover:bg-accent transition-colors text-muted-foreground hover:text-foreground flex-shrink-0"
+        >
+          <List className="w-3.5 h-3.5" />
+          List
+        </button>
       </div>
 
       {/* Question card */}

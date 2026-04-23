@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import type { Question } from '../types/exam'
+import { parseQuestionHtml } from '../lib/parseQuestionHtml'
 
 interface Props {
   question: Question
@@ -82,6 +83,9 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
   const msqAnswers = Array.isArray(answer) ? answer : []
   const natAnswer = typeof answer === 'string' ? answer : ''
 
+  const { questionHtml, optionHtmls } = parseQuestionHtml(question.text)
+  const hasOptionTexts = optionHtmls.length > 0
+
   const toggleMsq = (optId: string) => {
     if (msqAnswers.includes(optId)) {
       onAnswer(msqAnswers.filter(a => a !== optId))
@@ -108,7 +112,7 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
 
       {/* Question text */}
       <MathContent
-        html={question.text}
+        html={questionHtml}
         className="question-content text-sm leading-relaxed text-foreground"
       />
 
@@ -120,15 +124,18 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
 
         {question.type === 'MCQ' && (
           <RadioGroup value={mcqAnswer} onValueChange={onAnswer}>
-            <div className="flex flex-wrap gap-2">
-              {question.options.map(opt => (
+            <div className={hasOptionTexts ? 'flex flex-col gap-2' : 'flex flex-wrap gap-2'}>
+              {question.options.map((opt, i) => (
                 <label
                   key={opt.id}
                   htmlFor={`opt-${opt.id}`}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:border-foreground/40 cursor-pointer transition-colors has-[[data-state=checked]]:border-foreground has-[[data-state=checked]]:bg-accent"
+                  className="flex items-start gap-3 px-4 py-2.5 rounded-lg border border-border hover:border-foreground/40 cursor-pointer transition-colors has-[[data-state=checked]]:border-foreground has-[[data-state=checked]]:bg-accent"
                 >
-                  <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="flex-shrink-0" />
-                  <span className="text-sm font-semibold">{opt.id.toUpperCase()}</span>
+                  <RadioGroupItem value={opt.id} id={`opt-${opt.id}`} className="flex-shrink-0 mt-0.5" />
+                  <span className="text-sm font-semibold flex-shrink-0 w-5">{opt.id.toUpperCase()}.</span>
+                  {hasOptionTexts && optionHtmls[i]
+                    ? <MathContent html={optionHtmls[i]} className="question-content text-sm leading-relaxed flex-1" />
+                    : null}
                 </label>
               ))}
             </div>
@@ -136,12 +143,12 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
         )}
 
         {question.type === 'MSQ' && (
-          <div className="flex flex-wrap gap-2">
-            {question.options.map(opt => (
+          <div className={hasOptionTexts ? 'flex flex-col gap-2' : 'flex flex-wrap gap-2'}>
+            {question.options.map((opt, i) => (
               <label
                 key={opt.id}
                 htmlFor={`msq-${opt.id}`}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
+                className={`flex items-start gap-3 px-4 py-2.5 rounded-lg border cursor-pointer transition-colors ${
                   msqAnswers.includes(opt.id)
                     ? 'border-foreground bg-accent'
                     : 'border-border hover:border-foreground/40'
@@ -151,9 +158,12 @@ export function QuestionDisplay({ question, questionNumber, totalQuestions, answ
                   id={`msq-${opt.id}`}
                   checked={msqAnswers.includes(opt.id)}
                   onCheckedChange={() => toggleMsq(opt.id)}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 mt-0.5"
                 />
-                <span className="text-sm font-semibold">{opt.id.toUpperCase()}</span>
+                <span className="text-sm font-semibold flex-shrink-0 w-5">{opt.id.toUpperCase()}.</span>
+                {hasOptionTexts && optionHtmls[i]
+                  ? <MathContent html={optionHtmls[i]} className="question-content text-sm leading-relaxed flex-1" />
+                  : null}
               </label>
             ))}
           </div>

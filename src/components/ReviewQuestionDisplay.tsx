@@ -7,6 +7,7 @@ import { getBookmark, saveBookmark, removeBookmark } from '../lib/bookmarks'
 import { natCorrect } from '../lib/natCorrect'
 import { effectiveAnswer } from '../lib/answerOverrides'
 import { FixAnswerPanel } from './FixAnswerPanel'
+import { parseQuestionHtml } from '../lib/parseQuestionHtml'
 
 function fmtSeconds(secs: number): string {
   const m = Math.floor(secs / 60)
@@ -126,6 +127,8 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
   const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const correctAnswer = effectiveAnswer(question.id, question.correctAnswer)
+  const { questionHtml, optionHtmls } = parseQuestionHtml(question.text)
+  const hasOptionTexts = optionHtmls.length > 0
 
   useEffect(() => {
     const bm = getBookmark(question.id)
@@ -274,7 +277,7 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
 
       {/* Question text */}
       <MathContent
-        html={question.text}
+        html={questionHtml}
         className="question-content text-sm leading-relaxed text-foreground"
       />
 
@@ -283,17 +286,22 @@ export function ReviewQuestionDisplay({ question, questionNumber, totalQuestions
         <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Answer Review</p>
 
         {(question.type === 'MCQ' || question.type === 'MSQ') && (
-          <div className="flex flex-wrap gap-2">
-            {question.options.map(opt => {
+          <div className={hasOptionTexts ? 'flex flex-col gap-2' : 'flex flex-wrap gap-2'}>
+            {question.options.map((opt, i) => {
               const oc = question.type === 'MCQ'
                 ? mcqOutcome(opt.id, userAnswer, correctAnswer)
                 : msqOutcome(opt.id, userAnswer, correctAnswer)
               return (
                 <div
                   key={opt.id}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${OUTCOME_BORDER[oc]}`}
+                  className={`flex items-start gap-3 px-4 py-2.5 rounded-lg border ${OUTCOME_BORDER[oc]}`}
                 >
-                  <span className="text-sm font-semibold">{opt.id.toUpperCase()}</span>
+                  <span className="text-sm font-semibold flex-shrink-0 w-5">{opt.id.toUpperCase()}.</span>
+                  {hasOptionTexts && optionHtmls[i]
+                    ? <MathContent html={optionHtmls[i]} className="question-content text-sm leading-relaxed flex-1" />
+                    : opt.text && opt.text !== opt.id.toUpperCase()
+                      ? <span className="text-sm flex-1">{opt.text}</span>
+                      : null}
                   <OutcomeTag outcome={oc} />
                 </div>
               )

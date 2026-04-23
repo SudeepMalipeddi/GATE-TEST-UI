@@ -1,6 +1,6 @@
 # GATE Practice UI
 
-A full-featured exam practice interface for GATE CS and ISRO preparation. Supports timed mock exams, untimed practice mode with instant feedback, post-exam review, and inline AI-powered question explanations.
+A full-featured exam practice interface for GATE CS, ISRO, and NPTEL preparation. Supports timed mock exams, untimed practice with instant feedback, post-exam analytics, NPTEL lecture notes and flashcards, bookmarks, AI-powered explanations, and a global command palette.
 
 ---
 
@@ -16,14 +16,19 @@ A full-featured exam practice interface for GATE CS and ISRO preparation. Suppor
    - [Exam Mode](#exam-mode)
    - [Practice Mode](#practice-mode)
    - [Results and Review](#results-and-review)
+   - [Performance Stats](#performance-stats)
+   - [NPTEL Lectures](#nptel-lectures)
+   - [Bookmarks](#bookmarks)
+   - [Command Palette](#command-palette)
    - [AI Explanations (Ask AI)](#ai-explanations-ask-ai)
-8. [AI Provider Setup](#ai-provider-setup)
+8. [Keyboard Shortcuts](#keyboard-shortcuts)
+9. [AI Provider Setup](#ai-provider-setup)
    - [Gemini (cloud, free)](#gemini-cloud-free)
    - [Ollama (local, fully offline)](#ollama-local-fully-offline)
-9. [Project Structure](#project-structure)
-10. [Adding Custom Exams](#adding-custom-exams)
-11. [Exam Data Format](#exam-data-format)
-12. [Troubleshooting](#troubleshooting)
+10. [Project Structure](#project-structure)
+11. [Adding Custom Exams](#adding-custom-exams)
+12. [Exam Data Format](#exam-data-format)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -352,17 +357,27 @@ A faithful simulation of the GATE computer-based test interface.
 - **Unload protection**: browser warning if you try to close or refresh the tab mid-exam
 - **State persistence**: in-progress exam state is saved to `localStorage` so a page refresh does not lose your work
 - **Font size toggle**: three sizes (S / M / L) in the header, persisted across sessions
+- **Calculator**: scientific calculator overlay available throughout the exam
+
+---
 
 ### Practice Mode
 
 Untimed mode for working through questions at your own pace with immediate feedback.
 
 - No timer — work through questions in any order
-- **Check Answer**: reveals whether your selection is correct or wrong immediately, with per-option color coding
+- **Check Answer**: reveals whether your selection is correct or wrong immediately, with per-option color coding (green for correct, red for wrong)
 - **Try Again**: resets the feedback for a question so you can reattempt it
-- Palette shows your progress: correct (honeydew), wrong (red), attempted but unchecked (powder blue), untried (gray)
+- **Show Answers toggle**: a button at the top that instantly reveals the correct answer for every question — useful for studying before attempting, without disrupting your progress
+- **Elapsed timer**: a small per-question clock in the top-right of the question card counts up from zero each time you navigate to a new question, giving soft awareness of time without pressure
+- **Keyboard shortcuts**: press `?` or click **Shortcuts** in the header to see all active keys for the current mode
 - **Ask AI** panel opens automatically after checking an answer
-- Progress summary in the sidebar: how many questions checked, how many correct
+- **Palette**: correct (honeydew), wrong (red), attempted but unchecked (powder blue), untried (gray)
+- **Progress summary** in the sidebar: questions checked, questions correct
+- **Session persistence**: progress (answers, checked state, current position) is saved to `localStorage` automatically and restored when you return. A "Resumed previous session" banner lets you start fresh with one click
+- **NPTEL integration**: when launched from an NPTEL lecture, exiting practice returns you to that exact lecture rather than the NPTEL homepage
+
+---
 
 ### Results and Review
 
@@ -370,17 +385,26 @@ After submitting an exam you see a results summary and can review every question
 
 **Results page:**
 
-- Total score and maximum marks
-- Section-by-section breakdown: correct / wrong / skipped counts and marks earned
-- Penalty deduction summary for MCQ negative marking
+- Total score and maximum score
+- Section-by-section breakdown: correct / wrong / skipped counts and score per section
+- **Question overview heatmap**: a compact grid showing every question colored by outcome — green (correct), red (wrong), gray (skipped). When time-tracking data exists, opacity scales with time spent on that question so you can immediately spot questions where you hesitated
+- **Time analysis** (when time data exists):
+  - Total time tracked across the exam
+  - Per-section time breakdown
+  - Top 5 questions by time spent with question number and duration
 
 **Review page:**
 
-- Browse all questions in read-only mode
-- Each option is highlighted: correct answer (green border), your answer if wrong (red border), missed correct options for MSQ
-- Outcome badge per question: Correct / Wrong / Skipped
+- Browse all questions in read-only mode with `←` / `→` keyboard navigation
+- Each option is highlighted: correct answer (green border), your wrong answer (red border), missed correct options for MSQ
+- Outcome badge per question: Correct / Wrong / Skipped, with score change shown
+- Time spent per question shown with a clock icon
 - NAT questions show your numerical answer alongside the correct answer
+- **Bookmark** any question with the bookmark icon; add a note that persists across sessions
+- **Fix answer**: report a question where the stored correct answer appears wrong — overrides are saved locally and applied immediately
 - Ask AI panel available for every question
+
+---
 
 ### Performance Stats
 
@@ -390,6 +414,67 @@ A per-topic analytics page accessible from the **Stats** button on the exam sele
 - Shows: attempts, accuracy %, score %, correct / wrong / skipped counts
 - Sortable by any column
 - Accuracy bar visualisation per topic
+
+---
+
+### NPTEL Lectures
+
+A dedicated study mode for NPTEL course material, accessible from the **NPTEL** button on the exam select screen.
+
+**Course browser:**
+
+- Lists all available NPTEL courses grouped by subject
+- Shows total lecture count, question count, and flashcard count per course
+- Expandable week sections, each with individual lecture rows
+- Each lecture row shows whether notes, flashcards, and questions are available, along with counts
+
+**Lecture page — three tabs:**
+
+**Notes tab:**
+- Full lecture notes rendered as rich Markdown with support for LaTeX math, code blocks, tables, task lists, and GFM syntax
+- Prev / Next lecture buttons in the header for linear navigation through the entire course without returning to the browser
+
+**Flashcards tab:**
+- Card-flip deck with topic and difficulty tags
+- Progress bar showing cards reviewed vs. remaining
+- Cards are categorised: "Know it" moves to the end of the remaining deck; "Review again" keeps the card in rotation
+- **List view**: toggle from card mode to a scrollable list showing all flashcard fronts and backs simultaneously — useful for quick review
+- Prev / Next lecture navigation directly from the done screen
+- Keyboard shortcuts: `Space` or `→` to flip/advance, `←` to go back, `R` to mark a revealed card for review
+
+**Questions tab:**
+- Practice questions from the lecture loaded on demand
+- Full practice mode experience (check answer, try again, Ask AI) scoped to that lecture's questions
+
+**Navigation:**
+- Prev / Next lecture buttons appear in the page header across all three tabs
+- Navigation is infinite — clicking Next from the last lecture in a week advances to the first lecture of the next week, and vice versa
+
+---
+
+### Bookmarks
+
+Bookmark any question during review or practice to build a personal study list.
+
+- Click the bookmark icon on any question to save it
+- Add or edit a free-text note per bookmark — saved automatically with a short debounce
+- All bookmarks are visible in the **Bookmarks** tab on the exam select screen
+- From the Bookmarks tab: view the question preview, edit your note inline, and click **Open in Practice Mode** to jump directly to that question
+- Removing a bookmark from the Bookmarks tab deletes it permanently
+
+---
+
+### Command Palette
+
+A global search overlay available from any page or mode.
+
+- Press `Ctrl+K` (or `Cmd+K` on Mac) to open
+- Type to search across the full exam catalog by name — results appear as you type with question count shown
+- Static navigation shortcuts: jump to NPTEL Lectures or Stats in one keystroke
+- Selecting an exam loads it immediately and navigates to the instructions page
+- Press `Esc` to dismiss
+
+---
 
 ### AI Explanations (Ask AI)
 
@@ -404,9 +489,45 @@ Supports two AI providers — see [AI Provider Setup](#ai-provider-setup) for co
 - LaTeX math normalisation: handles `\(...\)` → `$...$` conversion and safely escapes `$` used as a grammar end-of-input symbol inside `\text{}` so it never confuses the math parser
 - Collapsible **Reasoning** block for thinking models (e.g., Gemma 4, DeepSeek-R1, gemini-2.5-flash)
 - **Conversation caching**: each question's AI conversation is saved to `localStorage` automatically — revisiting a question instantly restores the previous exchange without making a new API call
+- **Stop**: cancel an in-flight request at any time with the Stop button or `Escape` key
 - **Clear** button wipes both the in-memory state and the cached conversation for that question
 - Per-question isolation — the conversation resets automatically when you navigate to a new question
 - Local daily request counter for Gemini models (resets at midnight Pacific time)
+
+---
+
+## Keyboard Shortcuts
+
+### Practice Mode
+
+| Key | Action |
+|---|---|
+| `← →` | Previous / Next question |
+| `A` `B` `C` `D` | Select MCQ option / toggle MSQ option |
+| `Enter` | Check answer |
+| `R` | Try again (after checking) |
+| `?` | Toggle shortcuts panel |
+
+### Flashcard Mode
+
+| Key | Action |
+|---|---|
+| `Space` or `→` | Flip card (if not revealed) / advance to next card |
+| `←` | Go to previous card |
+| `R` | Mark revealed card for review |
+
+### Review Mode
+
+| Key | Action |
+|---|---|
+| `← →` | Previous / Next question |
+
+### Global
+
+| Key | Action |
+|---|---|
+| `Ctrl+K` | Open command palette |
+| `Escape` | Cancel AI request / close dialogs |
 
 ---
 
@@ -545,9 +666,13 @@ OLLAMA_ORIGINS="*" ollama serve
 ```
 gate-practice-ui/
 ├── public/
-│   └── exams/
-│       ├── catalog.json          # Index of all 900+ exams
-│       └── *.json                # Individual exam files
+│   ├── exams/
+│   │   ├── catalog.json          # Index of all 900+ exams
+│   │   └── *.json                # Individual exam files
+│   └── nptel/
+│       └── <courseId>/           # Per-course NPTEL data
+│           ├── structure.json    # Week/lecture index
+│           └── *.json            # Per-lecture notes, flashcards, questions
 ├── scripts/
 │   ├── export_context.py         # Exports catalog + history as a Claude-readable text file
 │   └── mcp_server.py             # MCP server exposing exam tools to Claude Code / Claude Desktop
@@ -557,25 +682,34 @@ gate-practice-ui/
 │   │   ├── ActionBar.tsx         # Save / Mark Review / Clear / Prev buttons
 │   │   ├── AskAI.tsx             # Inline AI chat panel (Gemini + Ollama), with localStorage cache
 │   │   ├── Calculator.tsx        # Scientific calculator overlay
-│   │   ├── ExamHeader.tsx        # Fixed top bar: exam name, font size toggle, exit button
+│   │   ├── CommandPalette.tsx    # Global Ctrl+K search overlay (exams + navigation)
+│   │   ├── ExamHeader.tsx        # Fixed top bar: exam name, font size, calculator, shortcuts
+│   │   ├── FixAnswerPanel.tsx    # Report / override incorrect stored answers
+│   │   ├── FlashcardDeck.tsx     # Card-flip flashcard deck with list-view toggle
 │   │   ├── Legend.tsx            # Status colour legend
 │   │   ├── QuestionDisplay.tsx   # Interactive question (exam + practice mode)
 │   │   ├── QuestionPalette.tsx   # Question number grid with status colours
 │   │   ├── ReviewQuestionDisplay.tsx  # Read-only question with answer feedback
 │   │   ├── SectionProgress.tsx   # Per-section answered/total progress bars
+│   │   ├── ShortcutsModal.tsx    # Keyboard shortcut cheatsheet dialog
 │   │   └── TimerBlock.tsx        # Countdown timer
 │   ├── hooks/
 │   │   └── useExamState.ts       # All exam state and actions (single source of truth)
 │   ├── lib/
+│   │   ├── answerOverrides.ts    # localStorage-backed correct-answer override store
 │   │   ├── bookmarks.ts          # Bookmark save/load/remove helpers (localStorage)
 │   │   ├── natCorrect.ts         # NAT answer checker supporting min:max range format
+│   │   ├── parseQuestionHtml.ts  # Splits NPTEL question HTML into question + option HTML
+│   │   ├── practiceSession.ts    # Practice mode session persistence (localStorage)
 │   │   └── topicClassifier.ts    # Keyword-based GATE CS topic classifier (17 buckets)
 │   ├── pages/
 │   │   ├── ExamPage.tsx          # Timed exam interface
 │   │   ├── ExamSelectPage.tsx    # Exam catalogue with year/subject grouping + upload
-│   │   ├── InstructionsPage.tsx  # Pre-exam instructions (with back button)
+│   │   ├── InstructionsPage.tsx  # Pre-exam instructions
+│   │   ├── NptelLecturePage.tsx  # NPTEL lecture view (notes / flashcards / questions tabs)
+│   │   ├── NptelPage.tsx         # NPTEL course browser
 │   │   ├── PracticePage.tsx      # Untimed practice with instant feedback
-│   │   ├── ResultsPage.tsx       # Score summary after submission
+│   │   ├── ResultsPage.tsx       # Score summary + heatmap + time analysis after submission
 │   │   ├── ReviewPage.tsx        # Post-exam answer review
 │   │   └── StatsPage.tsx         # Per-topic performance analytics table
 │   ├── types/
@@ -592,12 +726,14 @@ gate-practice-ui/
 ### Key architectural decisions
 
 - **Single state hook**: all exam state lives in `useExamState`. Pages receive state and callbacks as props — no prop drilling through context.
-- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` (`select` | `stats` | `instructions` | `exam` | `results` | `review` | `history-review` | `practice`).
+- **Phase-based routing**: the app is a single page; which UI renders is determined by `state.phase` — one of `select | stats | nptel | instructions | exam | results | review | history-review | practice`.
 - **Exam persistence**: `useExamState` writes the in-progress exam state to `localStorage` on every change. If the page is refreshed mid-exam, the state is restored automatically.
-- **Practice mode is local-only**: answers and checked state in practice mode live in `PracticePage` component state, not in `useExamState`. Nothing is persisted across sessions.
+- **Practice session persistence**: answers, checked state, and position in practice mode are saved to `localStorage` under a per-exam key and restored on re-entry. NPTEL practice sessions are not persisted (data is loaded dynamically).
+- **NPTEL navigation**: the lecture browser builds a flat ordered list of all lectures in a course at open time. Prev/Next callbacks always reference this flat list, so infinite chaining works without re-fetching the structure.
 - **AI chat caching**: each question's conversation is stored under `ai_chat_<questionId>` in `localStorage`. No API call is made on revisit unless the user clears it.
 - **NAT range answers**: `correctAnswer` can be a range string `"min:max"` (e.g. `"3.5:4.5"`). `src/lib/natCorrect.ts` handles both exact and range matching.
-- **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these via `rehype-katex`. AI responses go through `normaliseMath()` first to convert `\(...\)` syntax and protect `$` used as a grammar symbol inside `\text{}`.
+- **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these via `renderMathInElement`. The app pre-processes `\begin{env}...\end{env}` blocks with stray delimiters and cleans HTML artifacts (e.g. `<br>` tags inside math) before handing content to KaTeX.
+- **NPTEL HTML parsing**: NPTEL question text embeds answer options as `<ol>` inside the question HTML. `parseQuestionHtml` strips the list from the question body and returns option HTML separately so each option can be rendered as a selectable card. Backtick code spans (`\`...\``) are pre-converted to `<code>` elements with angle brackets HTML-encoded to prevent the browser's HTML parser from silently dropping C++ template types like `<string>` or `<vector>`.
 
 ---
 
@@ -915,4 +1051,8 @@ ollama pull <model-name>
 
 ### In-progress exam lost after page refresh
 
-Exam state is saved to `localStorage` only while `phase === 'exam'`. Practice mode state is intentionally not persisted. If the exam state was lost, check whether your browser has localStorage disabled or is clearing it on close (e.g., "clear cookies on exit" settings).
+Exam state is saved to `localStorage` only while `phase === 'exam'`. If the exam state was lost, check whether your browser has localStorage disabled or is clearing it on close (e.g., "clear cookies on exit" settings).
+
+### Practice session not restored
+
+Practice sessions are saved per exam name. They are not saved for NPTEL practice (since sections load dynamically). If the session is missing, check that the exam name has not changed — the session key is derived from the name.
