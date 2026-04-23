@@ -31,7 +31,18 @@ export function parseQuestionHtml(html: string): {
     const ol = doc.querySelector('ol')
     if (!ol) return { questionHtml: doc.body.innerHTML, optionHtmls: [] }
 
-    const optionHtmls = Array.from(ol.querySelectorAll('li')).map(li => li.innerHTML)
+    // Raw <li> contents from the original HTML — fallback for cases where
+    // the browser's HTML parser eats the content (e.g. <stack> treated as
+    // an unknown element, leaving the <li> with no text).
+    const rawLiContents = [...html.matchAll(/<li>([\s\S]*?)<\/li>/gi)].map(m => m[1])
+
+    const optionHtmls = Array.from(ol.querySelectorAll('li')).map((li, i) => {
+      if (li.textContent?.trim()) return li.innerHTML
+      // Content was silently eaten — escape and use raw source
+      const raw = rawLiContents[i] ?? ''
+      return raw.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    })
+
     ol.remove()
 
     // Strip hidden explanation paragraphs
