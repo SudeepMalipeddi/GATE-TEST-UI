@@ -733,7 +733,7 @@ gate-practice-ui/
 - **AI chat caching**: each question's conversation is stored under `ai_chat_<questionId>` in `localStorage`. No API call is made on revisit unless the user clears it.
 - **NAT range answers**: `correctAnswer` can be a range string `"min:max"` (e.g. `"3.5:4.5"`). `src/lib/natCorrect.ts` handles both exact and range matching.
 - **Math rendering**: question HTML contains inline LaTeX delimited by `$...$` and `$$...$$`. KaTeX renders these via `renderMathInElement`. The app pre-processes `\begin{env}...\end{env}` blocks with stray delimiters and cleans HTML artifacts (e.g. `<br>` tags inside math) before handing content to KaTeX.
-- **NPTEL HTML parsing**: NPTEL question text embeds answer options as `<ol>` inside the question HTML. `parseQuestionHtml` strips the list from the question body and returns option HTML separately so each option can be rendered as a selectable card. Backtick code spans (`\`...\``) are pre-converted to `<code>` elements with angle brackets HTML-encoded to prevent the browser's HTML parser from silently dropping C++ template types like `<string>` or `<vector>`.
+- **NPTEL HTML parsing**: NPTEL question text embeds answer options as `<ol>` inside the question HTML. `parseQuestionHtml` strips the list from the question body and returns option HTML separately so each option can be rendered as a selectable card. Backtick code spans (`` `...` ``) are pre-converted to `\<code>` elements with angle brackets HTML-encoded to prevent the browser's HTML parser from silently dropping C++ template types like `\<string>` or `\<vector>`.
 
 ---
 
