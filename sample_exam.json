@@ -1,0 +1,76 @@
+{
+  "name": "2025 | Algorithms Practice Test",
+  "durationMinutes": 60,
+  "sections": [
+    {
+      "name": "General Aptitude",
+      "questions": [
+        {
+          "id": "q-apt-1",
+          "text": "A train travels from city A to city B at 60 km/h and returns at 40 km/h. What is the average speed for the entire journey (in km/h)?",
+          "type": "NAT",
+          "options": [],
+          "correctAnswer": "48",
+          "marks": 1,
+          "penalty": 0
+        },
+        {
+          "id": "q-apt-2",
+          "text": "Choose the pair that best expresses a relationship similar to: <b>Scalpel : Surgeon</b>",
+          "type": "MCQ",
+          "options": [
+            { "id": "a", "text": "Brush : Painter" },
+            { "id": "b", "text": "Hammer : Wood" },
+            { "id": "c", "text": "Needle : Thread" },
+            { "id": "d", "text": "Pen : Ink" }
+          ],
+          "correctAnswer": "a",
+          "marks": 1,
+          "penalty": 0.33
+        }
+      ]
+    },
+    {
+      "name": "Computer Science",
+      "questions": [
+        {
+          "id": "q-cs-1",
+          "text": "Consider the following recurrence: $$T(n) = 2T\\left(\\frac{n}{2}\\right) + n$$ By the Master Theorem, the solution is:",
+          "type": "MCQ",
+          "options": [
+            { "id": "a", "text": "$O(n)$" },
+            { "id": "b", "text": "$O(n \\log n)$" },
+            { "id": "c", "text": "$O(n^2)$" },
+            { "id": "d", "text": "$O(\\log n)$" }
+          ],
+          "correctAnswer": "b",
+          "marks": 2,
+          "penalty": 0.67
+        },
+        {
+          "id": "q-cs-2",
+          "text": "Which of the following data structures support $O(1)$ amortized insertion?",
+          "type": "MSQ",
+          "options": [
+            { "id": "a", "text": "Dynamic array (e.g. ArrayList)" },
+            { "id": "b", "text": "Singly linked list (insert at head)" },
+            { "id": "c", "text": "Min-heap" },
+            { "id": "d", "text": "Hash table with chaining (average case)" }
+          ],
+          "correctAnswer": ["a", "b", "d"],
+          "marks": 2,
+          "penalty": 0
+        },
+        {
+          "id": "q-cs-3",
+          "text": "The number of distinct binary trees with exactly 3 nodes is:",
+          "type": "NAT",
+          "options": [],
+          "correctAnswer": "5",
+          "marks": 1,
+          "penalty": 0
+        }
+      ]
+    }
+  ]
+}
