@@ -150,8 +150,10 @@ Correct answer: ${correct}
 
 Explain clearly why the answer is correct. For follow-up questions, answer them directly. Keep explanations brief and precise.
 
+IMPORTANT: Do NOT restate the question, the correct answer, your role, or these instructions. Begin your explanation immediately.
+
 Formatting rules:
-- Use markdown for structure (bold, lists, code blocks)
+- Write in prose. Only use a bullet list when items are genuinely enumerable (e.g. a list of steps or options). Do NOT bullet-point a flowing explanation — write it as paragraphs. Use bold for key terms, code blocks for code.
 - Use LaTeX for ALL math and symbols: $x$ for inline, $$x$$ for display/block
 - NEVER use Unicode math characters — always use LaTeX equivalents:
   - Arrows: $\\rightarrow$, $\\Rightarrow$, $\\leftarrow$ (never →, =>, ⟹)
@@ -301,8 +303,8 @@ function MdMessage({ text }: { text: string }) {
       rehypePlugins={[[rehypeKatex, { strict: false }]]}
       components={{
         p:    ({ children }) => <p className="text-base mb-1 last:mb-0">{children}</p>,
-        ul:   ({ children }) => <ul className="text-base list-disc list-inside space-y-0.5 mb-1">{children}</ul>,
-        ol:   ({ children }) => <ol className="text-base list-decimal list-inside space-y-0.5 mb-1">{children}</ol>,
+        ul:   ({ children }) => <ul className="text-base list-disc list-outside pl-5 space-y-0.5 mb-1">{children}</ul>,
+        ol:   ({ children }) => <ol className="text-base list-decimal list-outside pl-5 space-y-0.5 mb-1">{children}</ol>,
         li:   ({ children }) => <li className="text-base leading-relaxed">{children}</li>,
         code: ({ children, className }) =>
           className
