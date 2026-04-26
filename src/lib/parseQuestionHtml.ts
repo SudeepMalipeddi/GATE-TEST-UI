@@ -28,13 +28,16 @@ export function parseQuestionHtml(html: string): {
 } {
   try {
     const doc = new DOMParser().parseFromString(fixBackticks(html), 'text/html')
-    const ol = doc.querySelector('ol')
+    // Prefer the NPTEL-style upper-alpha list; fall back to the first ol only
+    // if no upper-alpha list exists. This prevents grabbing a numbered list
+    // in the question body when the actual options ol comes later.
+    const ol = doc.querySelector('ol[style*="upper-alpha"]') ?? doc.querySelector('ol[style*="upper-Alpha"]') ?? null
     if (!ol) return { questionHtml: doc.body.innerHTML, optionHtmls: [] }
 
-    // Raw <li> contents from the original HTML — fallback for cases where
-    // the browser's HTML parser eats the content (e.g. <stack> treated as
-    // an unknown element, leaving the <li> with no text).
-    const rawLiContents = [...html.matchAll(/<li>([\s\S]*?)<\/li>/gi)].map(m => m[1])
+    // Raw <li> contents scoped to the matching ol in the original HTML so we
+    // don't accidentally pick up <li> elements from other lists in the question body.
+    const olSourceMatch = html.match(/<ol[^>]*upper-[aA]lpha[^>]*>([\s\S]*?)<\/ol>/i)
+    const rawLiContents = [...(olSourceMatch?.[0] ?? html).matchAll(/<li>([\s\S]*?)<\/li>/gi)].map(m => m[1])
 
     const optionHtmls = Array.from(ol.querySelectorAll('li')).map((li, i) => {
       if (li.textContent?.trim()) return li.innerHTML
