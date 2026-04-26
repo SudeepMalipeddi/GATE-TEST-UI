@@ -191,7 +191,10 @@ async function callGemini(
     throw new Error(res.status === 400 || res.status === 403 ? `${msg} — check your API key.` : msg)
   }
   const data = await res.json()
-  return { text: data?.candidates?.[0]?.content?.parts?.[0]?.text ?? 'No response received.' }
+  const parts: { text?: string; thought?: boolean }[] = data?.candidates?.[0]?.content?.parts ?? []
+  const thinking = parts.find(p => p.thought)?.text
+  const text = parts.find(p => !p.thought)?.text ?? 'No response received.'
+  return { text, thinking: thinking || undefined }
 }
 
 async function callOllama(
