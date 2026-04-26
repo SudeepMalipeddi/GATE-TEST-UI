@@ -5,6 +5,7 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import type { NptelLectureData, NptelFlashcard, ExamData } from '../types/exam'
 import { FlashcardDeck } from '../components/FlashcardDeck'
+import { AskAI } from '../components/AskAI'
 
 type Tab = 'notes' | 'flashcards' | 'questions'
 
@@ -26,7 +27,7 @@ function buildSingleLectureExam(data: NptelLectureData): ExamData {
 }
 
 // ── Notes tab ─────────────────────────────────────────────────────
-function NotesTab({ notes }: { notes: string }) {
+function NotesTab({ notes, lectureId, lectureName }: { notes: string; lectureId: string; lectureName: string }) {
   return (
     <div className="max-w-3xl mx-auto px-6 py-6">
       <ReactMarkdown
@@ -72,6 +73,11 @@ function NotesTab({ notes }: { notes: string }) {
       >
         {notes}
       </ReactMarkdown>
+
+      <div className="mt-8 border-t border-border pt-6">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Ask AI about these notes</p>
+        <AskAI notesContext={{ id: lectureId, title: lectureName, content: notes }} />
+      </div>
     </div>
   )
 }
@@ -189,7 +195,7 @@ export function NptelLecturePage({ data, initialTab, onBack, onPractice, onNextL
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {tab === 'notes'      && data.notes      && <NotesTab notes={data.notes} />}
+        {tab === 'notes'      && data.notes      && <NotesTab notes={data.notes} lectureId={data.lecture_name} lectureName={data.lecture_name} />}
         {tab === 'flashcards' && <FlashcardsTab cards={data.flashcards} onNextLecture={onNextLecture} onPrevLecture={onPrevLecture} />}
         {tab === 'questions'  && <QuestionsTab data={data} onPractice={onPractice} />}
       </div>

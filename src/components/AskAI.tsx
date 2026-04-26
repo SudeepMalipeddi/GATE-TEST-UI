@@ -8,9 +8,15 @@ import { Input } from '@/components/ui/input'
 import { Loader2, Send, Trash2, Settings, ChevronDown, ChevronRight, Brain, RefreshCw, Square } from 'lucide-react'
 import type { Question } from '../types/exam'
 
-interface Props {
-  question: Question
+interface NotesContext {
+  id: string
+  title: string
+  content: string
 }
+
+type Props =
+  | { question: Question; notesContext?: never }
+  | { notesContext: NotesContext; question?: never }
 
 interface Message {
   role: 'user' | 'assistant'
@@ -163,6 +169,25 @@ Formatting rules:
   - Other: $\\times$, $\\log$, $\\in$, $\\cup$, $\\cap$, $\\emptyset$
 - For the end-of-input grammar symbol "$", ALWAYS write it as $\\char36$ inside math (e.g., $S' \\rightarrow S\\ \\char36$). NEVER use a bare $ or \\$ for the grammar symbol.
 - Never mix Unicode math symbols with LaTeX in the same response`
+}
+
+function buildNotesSystemContext(ctx: NotesContext): string {
+  return `You are a helpful tutor. A student is reading NPTEL lecture notes titled "${ctx.title}" and has questions about the content.
+
+Lecture notes:
+${ctx.content.slice(0, 8000)}
+
+Answer questions clearly and concisely. Give concrete examples when they help understanding. Keep answers focused on the notes or directly related concepts.
+
+IMPORTANT: Do NOT restate or summarise the notes. Answer the student's question directly.
+
+Formatting rules:
+- Write in prose. Only use a bullet list when items are genuinely enumerable. Use bold for key terms, code blocks for code.
+- Use LaTeX for ALL math and symbols: $x$ for inline, $$x$$ for display/block
+- NEVER use Unicode math characters — always use LaTeX equivalents:
+  - Arrows: $\\rightarrow$, $\\Rightarrow$, $\\leftarrow$ (never →, =>, ⟹)
+  - Subscripts: $I_0$, $I_1$ (never I₀, I₁)
+  - Other: $\\times$, $\\log$, $\\in$, $\\cup$, $\\cap$, $\\emptyset$`
 }
 
 // ── API calls ──────────────────────────────────────────────────────
@@ -639,7 +664,9 @@ function isConfigured(): boolean {
   return !!localStorage.getItem(KEY_OLLAMA_MODEL)
 }
 
-export function AskAI({ question }: Props) {
+export function AskAI({ question, notesContext }: Props) {
+  const contextId = question ? question.id : `notes_${notesContext!.id}`
+  const getSystemContext = () => question ? buildSystemContext(question) : buildNotesSystemContext(notesContext!)
   const [showSetup, setShowSetup] = useState(!isConfigured())
   const [messages,  setMessages]  = useState<Message[]>([])
   const [input,     setInput]     = useState('')
@@ -649,15 +676,14 @@ export function AskAI({ question }: Props) {
   const [usageTick, setUsageTick] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
   // Track current question id so async callbacks don't clobber a different question
-  const currentQidRef = useRef(question.id)
+  const currentQidRef = useRef(contextId)
 
   useEffect(() => {
-    currentQidRef.current = question.id
-    setMessages(loadCachedMessages(question.id))
+    currentQidRef.current = contextId
+    setMessages(loadCachedMessages(contextId))
     setError(null)
-    // Reflect whether a background request is already in-flight for this question
-    setLoading(activeRequests.has(question.id))
-  }, [question.id])
+    setLoading(activeRequests.has(contextId))
+  }, [contextId])
 
   // Subscribe to background-request completion notifications
   useEffect(() => {
@@ -680,7 +706,7 @@ export function AskAI({ question }: Props) {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
 
-  const stop = () => { activeRequests.get(question.id)?.abort() }
+  const stop = () => { activeRequests.get(contextId)?.abort() }
 
   const providerLabel = () => {
     const p = localStorage.getItem(KEY_PROVIDER) as Provider | null
@@ -702,7 +728,7 @@ export function AskAI({ question }: Props) {
     setInput('')
     setError(null)
 
-    const qid = question.id
+    const qid = contextId
     const controller = new AbortController()
     activeRequests.set(qid, controller)
 
@@ -713,7 +739,7 @@ export function AskAI({ question }: Props) {
 
     try {
       const provider      = (localStorage.getItem(KEY_PROVIDER) as Provider | null) ?? 'gemini'
-      const systemContext = buildSystemContext(question)
+      const systemContext = getSystemContext()
       let result: { text: string; thinking?: string }
 
       if (provider === 'gemini') {
@@ -771,7 +797,7 @@ export function AskAI({ question }: Props) {
         <div className="flex items-center gap-1">
           {messages.length > 0 && (
             <button
-              onClick={() => { clearCachedMessages(question.id); setMessages([]); setError(null) }}
+              onClick={() => { clearCachedMessages(contextId); setMessages([]); setError(null) }}
               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors"
             >
               <Trash2 className="w-3 h-3" /> Clear
